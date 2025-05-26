@@ -429,7 +429,13 @@ let currentFontSize = 1; // or your default
                 const files = await response.json();
                 songListElement.innerHTML = '';
                 if (!Array.isArray(files)) throw new Error('Unexpected response format from GitHub API.');
-                const txtFiles = files.filter(file => file.type === 'file' && file.name.endsWith('.txt'));
+                let txtFiles = files.filter(file => file.type === 'file' && file.name.endsWith('.txt'));
+                // --- Natural sort by filename (numerically) ---
+                txtFiles.sort((a, b) => {
+                    const nameA = a.name.replace('.txt', '');
+                    const nameB = b.name.replace('.txt', '');
+                    return nameA.localeCompare(nameB, undefined, { numeric: true, sensitivity: 'base' });
+                });
                 allTxtFiles = txtFiles; // <-- Store for search
                 if (txtFiles.length === 0) {
                     songListElement.innerHTML = '<li>No .txt songs found in this repository/folder.</li>';
