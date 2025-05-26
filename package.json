@@ -1,0 +1,25 @@
+{
+  "name": "songs4ehow",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chrisinhim/songs4ehow.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/chrisinhim/songs4ehow/issues"
+  },
+  "homepage": "https://github.com/chrisinhim/songs4ehow#readme",
+  "dependencies": {
+    "firebase-admin": "^13.4.0",
+    "songs4ehow": "file:"
+  }
+}

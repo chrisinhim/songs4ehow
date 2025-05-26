@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Melodies Of Worship</title>
+    <!-- Google Fonts: Noto Sans Telugu and Roboto example -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu&family=Roboto:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'EnglishFont';
+            src: local('Arial'), local('Helvetica'), sans-serif;
+            unicode-range: U+0000 -00FF;
+            /* Basic Latin */
+        }
+
+        @font-face {
+            font-family: 'TeluguFont';
+            src: local('Noto Sans Telugu'), local('Gautami'), sans-serif;
+            unicode-range: U+0C00-0C7F;
+            /* Telugu Unicode block */
+        }
+
+        /* Add these styles inside your <style> tag, before the @media section */
+        /* Light Theme (default) */
+
+        :root {
+            --bg-main: #fff;
+            --bg-sidebar: #f4f4f4;
+            --bg-hover: #e0e0e0;
+            --text-main: #222;
+            --text-heading: #333;
+            --border: #ccc;
+            --border-list: #eee;
+            --btn-bg: #1976d2;
+            --btn-text: #fff;
+        }
+
+        /* Dark Theme */
+        [data-theme="dark"] {
+            --bg-main: #23272e;
+            --bg-sidebar: #2c313a;
+            --bg-hover: #353a42;
+            --text-main: #e0e0e0;
+            --text-heading: #fafafa;
+            --border: #444a54;
+            --border-list: #3a3f47;
+            --btn-bg: #3b5ba9;
+            --btn-text: #fff;
+        }
+
+        /* New Theme: Ocean Calm */
+        [data-theme="ocean-calm"] {
+            --bg-main: #f4f7f9;         /* Very light cool gray */
+            --bg-sidebar: #e9edf0;      /* Light cool gray */
+            --bg-hover: #d8dfe3;        /* Subtle darker cool gray for hover */
+            --text-main: #34495e;       /* Dark slate gray */
+            --text-heading: #2c3e50;    /* Deeper slate gray / almost black */
+            --border: #bdc3c7;          /* Soft medium gray */
+            --border-list: #dce0e2;     /* Lighter gray for list items */
+            --btn-bg: #3498db;          /* Pleasant medium blue */
+            --btn-text: #ffffff;        /* White */
+        }
+
+
+        body {
+            font-family: 'Roboto', 'Noto Sans Telugu', Arial, sans-serif;
+            display: flex;
+            margin: 0;
+            height: 100vh;
+            background: var(--bg-main);
+            color: var(--text-main);
+        }
+
+        #sidebar {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            box-sizing: border-box;
+            min-width: 260px;
+            /* Remove or increase this line: */
+            /* max-width: 340px; */
+            /* Or set a very large max-width if you want some limit: */
+            max-width: 1200px;
+            /* Set a fixed width for consistency */
+        }
+
+        #sidebar h2 {
+            margin: 5px auto 5px auto;
+            /* Remove top/left margin, add space below */
+            color: var(--text-heading);
+            text-align: center;
+            /* Center text horizontally */
+            align-self: center;
+            /* Center the h2 in the flex column */
+        }
+
+        .song-list-container {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            position: relative;
+            /* For positioning scroll buttons */
+        }
+
+        #song-list {
+            flex: 1 1 auto;
+            max-height: none;
+            overflow-y: auto;
+        }
+
+        #song-list li {
+            list-style: none;
+            padding: 10px 0;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-list);
+            transition: background-color 0.2s ease;
+            white-space: nowrap;
+            /* Prevent wrapping */
+            overflow: visible;
+            /* Show full text */
+            text-overflow: unset;
+            /* No ellipsis */
+        }
+
+        #song-list li:last-child {
+            border-bottom: none;
+        }
+
+        #song-list li:hover {
+            background-color: var(--bg-hover);
+        }
+
+        #main-pane {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            background-color: var(--bg-main);
+            box-sizing: border-box;
+        }
+
+        #main-pane pre {
+            margin: 0;
+            font-family: 'Noto Sans Telugu', Courier, monospace;
+            font-size: 1em;
+            line-height: 1.5;
+            color: var(--text-main);
+            background: none;
+            white-space: pre-wrap;
+            /* Ensures long lines wrap within the pre tag */
+        }
+
+        .error {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        /* Hide back button on desktop */
+        #back-btn {
+            display: none;
+        }
+
+        .scroll-overlay-btn {
+            position: absolute;
+            right: 8px;
+            z-index: 10;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            font-size: 1.5em;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+            cursor: pointer;
+            opacity: 0.85;
+            display: none;
+            transition: opacity 0.2s;
+        }
+
+        #scroll-bottom-btn {
+            bottom: 8px;
+        }
+
+        #scroll-top-btn {
+            top: 8px;
+        }
+
+        #theme-toggle-btn {
+            /* Styles moved from inline */
+            font-weight: bold;
+            padding: 6px 16px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            background: var(--bg-sidebar);
+            color: var(--text-main);
+            cursor: pointer;
+            /* Existing styles */
+            margin: 0;
+            /* Remove margin */
+            flex-shrink: 0;
+            box-sizing: border-box;
+        }
+
+        /* Hide presentation controls on mobile */
+        /* #presentation-controls {
+            display: none;
+        } */
+
+        #presentation-mode-toggle {
+            font-size: 1.2em;
+            padding: 10px 18px;
+            border-radius: 6px;
+            min-width: 44px;
+            min-height: 44px;
+        }
+        #controls button {
+            font-size: 1.2em;
+            padding: 10px 18px;
+            border-radius: 6px;
+            min-width: 44px;
+            min-height: 44px;
+        }
+
+        #back-btn {
+            font-size: 1.2em;
+            padding: 10px 18px;
+            border-radius: 6px;
+            min-width: 44px;
+            min-height: 44px;
+        }
+
+        /* --- Mobile Responsive Styles --- */
+        @media (max-width: 600px) {
+            body {
+                flex-direction: column;
+            }
+
+            #sidebar {
+                width: 100vw;
+                /* Full viewport width */
+                min-width: 0;
+                /* Remove min-width restriction */
+                max-width: none;
+                /* Remove max-width restriction */
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 10px;
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+                box-sizing: border-box;
+            }
+
+            .song-list-container {
+                flex: 1 1 auto;
+                /* Take all available space above theme button */
+                display: flex;
+                flex-direction: column;
+                min-height: 0;
+                max-height: none;
+                /* Remove max-height restriction */
+            }
+
+            #song-list {
+                flex: 1 1 auto;
+                overflow-y: auto;
+                max-height: none;
+                list-style: none;
+                padding-left: 0;
+            }
+
+            #theme-toggle-btn {
+                margin: 0;
+                /* Remove margin */
+                flex-shrink: 0;
+                box-sizing: border-box;
+            }
+
+            /* Show back button on mobile */
+            #back-btn {
+                display: block;
+            }
+
+            #controls {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                gap: 0;
+                margin-bottom: 8px;
+            }
+
+            #back-btn {
+                display: block;
+                order: 0;
+            }
+
+            #text-size-controls {
+                order: 1;
+            }
+        }
+
+        /* Search input styles */
+        #song-search {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 8px;
+            font-size: 1em;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            box-sizing: border-box;
+        }
+
+        #clear-search-btn {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+            color: #888;
+            display: none;
+            padding: 0;
+            line-height: 1;
+        }
+
+        #clear-search-btn:hover {
+            color: #333;
+        }
+
+        #sidebar {
+            position: relative;
+            /* ...existing styles... */
+        }
+
+        #sidebar-resizer {
+            width: 6px;
+            cursor: ew-resize;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 20;
+            background: transparent;
+            /* Optional: add a visible handle */
+            /* background: linear-gradient(to right, #ccc 40%, #eee 60%); */
+            /* border-radius: 3px 0 0 3px; */
+        }
+
+        @media (max-width: 600px) {
+            #sidebar-resizer {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="sidebar">
+        <h2>Melodies Of Worship</h2>
+        <div style="position: relative; width: 100%; margin-bottom: 10px;">
+            <input id="song-search" type="text" placeholder="Search songs..." style="width: 100%; padding: 8px 32px 8px 8px; font-size: 1em; border-radius: 4px; border: 1px solid var(--border); box-sizing: border-box;" />
+            <button id="clear-search-btn" type="button" aria-label="Clear search" style="position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 1.2em; cursor: pointer; color: #888; display: none; padding: 0; line-height: 1;">&#10006;</button>
+        </div>
+        <div class="song-list-container">
+            <ul id="song-list"></ul>
+            <button id="scroll-bottom-btn" type="button" class="scroll-overlay-btn" aria-label="Go to bottom" title="Go to bottom">↓</button>
+            <button id="scroll-top-btn" type="button" class="scroll-overlay-btn" aria-label="Go to top" title="Go to top">↑</button>
+        </div>
+        <button id="theme-toggle-btn" type="button">Theme: System Default</button>
+        <div id="sidebar-resizer" style="width: 6px; cursor: ew-resize; position: absolute; top: 0; right: 0; bottom: 0; z-index: 20; background: transparent;"></div>
+        <button id="show-add-song-form-btn" type="button" style="margin-top: 10px; padding: 8px; background-color: var(--btn-bg); color: var(--btn-text); border: none; border-radius: 4px; cursor: pointer;">
+            Add New Song
+        </button>
+        <div id="song-editor-form" style="display: none; margin-top: 15px; padding: 10px; border: 1px solid var(--border); border-radius: 4px; background-color: var(--bg-sidebar);">
+            <h3 id="editor-form-title">Add New Song</h3>
+            <input type="hidden" id="editor-song-id">
+            <div><label for="editor-song-title">Title:</label><input type="text" id="editor-song-title" style="width: calc(100% - 10px); margin-bottom: 5px; padding: 6px;"></div>
+            <div><label for="editor-song-number">Number (for ordering):</label><input type="number" id="editor-song-number" style="width: calc(100% - 10px); margin-bottom: 5px; padding: 6px;"></div>
+            <div><label for="editor-song-content">Content:</label><textarea id="editor-song-content" rows="10" style="width: calc(100% - 10px); margin-bottom: 10px; padding: 6px; font-family: inherit;"></textarea></div>
+            <button id="save-song-btn" type="button" style="padding: 8px 12px; background-color: var(--btn-bg); color: var(--btn-text); border:none; border-radius:4px; cursor:pointer;">Save Song</button>
+            <button id="cancel-editor-btn" type="button" style="padding: 8px 12px; margin-left: 5px; background-color: #888; color: white; border:none; border-radius:4px; cursor:pointer;">Cancel</button>
+        </div>
+    </div>
+
+    <div id="main-pane">
+        <div id="controls" style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <button id="back-btn" type="button">← Back to list</button>
+            <button id="decrease-text-btn" type="button" title="Decrease text size" aria-label="A-">A-</button>
+            <button id="increase-text-btn" type="button" title="Increase text size" aria-label="A+">A+</button>
+            <button id="edit-song-btn" type="button" style="margin-left:12px; display:none;">Edit Song</button>
+            <button id="presentation-mode-toggle" type="button" style="margin-left:12px;">Presentation Mode: OFF</button>
+            <select id="presentation-font-select" style="margin-left: 12px; display: none;">
+                <option value="'Noto Sans Telugu', 'Roboto', Arial, sans-serif">Default</option>
+                <option value="'Roboto', Arial, sans-serif">Roboto</option>
+                <option value="'Noto Sans Telugu', Arial, sans-serif">Noto Sans Telugu</option>
+                <option value="'Oswald', Arial, sans-serif">Oswald</option>
+                <option value="'Lobster', cursive">Lobster</option>
+            </select>
+        </div>
+        <div id="song-content"></div> <!-- Changed from pre to div -->
+
+    </div>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js"; // Analytics can be optional if not actively used
+        import { getFirestore, collection, getDocs, doc, getDoc, addDoc, updateDoc, orderBy, query as firestoreQuery } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5KD0XiUNEDYilrJQr2HCes4VrcIEy9cc",
+            authDomain: "ehow-songs-book.firebaseapp.com",
+            projectId: "ehow-songs-book",
+            storageBucket: "ehow-songs-book.firebasestorage.app",
+            messagingSenderId: "1081643882591",
+            appId: "1:1081643882591:web:f9b0427141eaad116923ea",
+            measurementId: "G-V0PM8KGF8M"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app); // Initialize if needed
+        const db = getFirestore(app); // Initialize Firestore
+
+        // GitHub constants are no longer needed as we're using Firestore
+
+        // --- Google Fonts Config ---
+        const googleFonts = [
+            { name: "Roboto", css: "'Roboto', Arial, sans-serif", url: "https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" },
+            { name: "Noto Sans Telugu", css: "'Noto Sans Telugu', Arial, sans-serif", url: "https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu&display=swap" },
+            { name: "Oswald", css: "'Oswald', Arial, sans-serif", url: "https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" },
+            { name: "Lobster", css: "'Lobster', cursive", url: "https://fonts.googleapis.com/css2?family=Lobster&display=swap" }
+        ];
+
+        // --- DOM Elements ---
+        const songListElement = document.getElementById('song-list');
+        const songContentElement = document.getElementById('song-content');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarResizer = document.getElementById('sidebar-resizer');
+        const mainPane = document.getElementById('main-pane');
+        const controlsDiv = document.getElementById('controls');
+        const presentationModeToggle = document.getElementById('presentation-mode-toggle');
+        // const presentationControlsDiv = document.getElementById('presentation-controls');
+        // const increasePresentationTextBtn = document.getElementById('increase-presentation-text-btn');
+        // const decreasePresentationTextBtn = document.getElementById('decrease-presentation-text-btn');
+        const backBtn = document.getElementById('back-btn');
+        const themeToggleBtn = document.getElementById('theme-toggle-btn');
+        const scrollBottomBtn = document.getElementById('scroll-bottom-btn');
+        const scrollTopBtn = document.getElementById('scroll-top-btn');
+        const increaseTextBtn = document.getElementById('increase-text-btn');
+        const decreaseTextBtn = document.getElementById('decrease-text-btn');
+        const presentationFontSelect = document.getElementById('presentation-font-select');
+        const songSearchInput = document.getElementById('song-search');
+        const clearSearchBtn = document.getElementById('clear-search-btn');
+
+        // Editor form elements
+        const showAddSongFormBtn = document.getElementById('show-add-song-form-btn');
+        const songEditorForm = document.getElementById('song-editor-form');
+        const editorFormTitle = document.getElementById('editor-form-title');
+        const editorSongId = document.getElementById('editor-song-id');
+        const editorSongTitle = document.getElementById('editor-song-title');
+        const editorSongNumber = document.getElementById('editor-song-number');
+        const editorSongContent = document.getElementById('editor-song-content');
+        const saveSongBtn = document.getElementById('save-song-btn');
+        const cancelEditorBtn = document.getElementById('cancel-editor-btn');
+        const editSongBtn = document.getElementById('edit-song-btn');
+
+        // --- State ---
+        let allSongsData = []; // Will store { id, title, number } from Firestore
+        const songCache = new Map();
+        const INITIAL_SONG_CONTENT_MESSAGE = 'Select a song from the list, or use the search bar.';        
+        const themeModes = ['system', 'light', 'dark', 'ocean-calm'];
+        const themeLabels = {
+            'system': 'Theme: System Default',
+            'light': 'Theme: Light',
+            'dark': 'Theme: Dark',
+            'ocean-calm': 'Theme: Ocean Calm'
+        };
+        let presentationWindow = null;
+        let presentationWindowCheckInterval = null;
+        let isPresentationMode = false;
+        let presentationFontSize = 1.5;
+        let currentFontSize = 1;
+        let currentEditingSongId = null; // To keep track of which song is being edited
+
+        // --- Theme ---
+        function applyTheme(theme) {
+            if (theme === 'system') {
+                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.removeAttribute('data-theme');
+                }
+            } else {
+                document.documentElement.setAttribute('data-theme', theme);
+            }
+            themeToggleBtn.textContent = themeLabels[theme];
+        }
+        function loadTheme() {
+            const saved = localStorage.getItem('theme') || 'system';
+            applyTheme(saved);
+        }
+        themeToggleBtn.addEventListener('click', () => {
+            let current = localStorage.getItem('theme') || 'system';
+            let idx = themeModes.indexOf(current);
+            let next = themeModes[(idx + 1) % themeModes.length];
+            localStorage.setItem('theme', next);
+            applyTheme(next);
+        });
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            const current = localStorage.getItem('theme') || 'system';
+            if (current === 'system') applyTheme('system');
+        });
+
+        // --- Song List Fetch & Display ---
+        async function fetchSongList() {
+            songListElement.innerHTML = '<li>Loading songs...</li>';
+            try {
+                const songsCollection = collection(db, "songs");
+                const q = firestoreQuery(songsCollection, orderBy("number", "asc")); // or orderBy("title", "asc")
+                const querySnapshot = await getDocs(q);
+
+                songListElement.innerHTML = '';
+                const fetchedSongMetadata = []; // For rendering the list
+                songCache.clear(); // Clear existing cache before populating
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const songTitle = data.title || doc.id;
+                    const songNumber = data.number || 0;
+                    const songContent = data.content || "[No content available]";
+
+                    // Populate metadata for the song list
+                    fetchedSongMetadata.push({
+                        id: doc.id, 
+                        title: songTitle,
+                        number: songNumber
+                    });
+
+                    // Cache the full song content
+                    songCache.set(doc.id, { title: songTitle, content: songContent });
+                });
+
+                allSongsData = fetchedSongMetadata;
+
+                if (allSongsData.length === 0) {
+                    songListElement.innerHTML = '<li>No songs found in the database.</li>';
+                    return;
+                }
+                renderSongList(allSongsData);
+                console.log(`Successfully loaded metadata and content for ${allSongsData.length} songs.`);
+            } catch (error) {
+                console.error("Error fetching full song data from Firestore:", error);
+                songListElement.innerHTML = `<li class="error">Error loading songs. Check console for details.</li>`;
+            } finally {
+                updateScrollButtons();
+            }
+        }
+
+        function renderSongList(songsToRender) {
+            songListElement.innerHTML = '';
+            songsToRender.forEach(song => {
+                const listItem = document.createElement('li');
+                listItem.textContent = song.title;
+                listItem.dataset.songId = song.id; // Use song.id from Firestore
+                listItem.addEventListener('click', () => displaySongContent(song.id));
+                songListElement.appendChild(listItem);
+            });
+            updateScrollButtons();
+        }
+
+        // --- Search ---
+        // Updated to search through `allSongsData` based on title
+        songSearchInput.addEventListener('input', function () {
+            const query = this.value.trim().toLowerCase();
+            clearSearchBtn.style.display = this.value ? 'block' : 'none';
+            if (!query) {
+                renderSongList(allSongsData); // Corrected from allTxtFiles
+                return;
+            }
+            const filtered = allSongsData.filter(song => {
+                const title = song.title.toLowerCase();
+                const cachedSong = songCache.get(song.id); // Get from cache
+                const content = cachedSong ? cachedSong.content.toLowerCase() : '';
+                return title.includes(query) || content.includes(query);
+            });
+            renderSongList(filtered);
+        });
+        clearSearchBtn.addEventListener('click', function () {
+            songSearchInput.value = '';
+            clearSearchBtn.style.display = 'none';
+            renderSongList(allSongsData);
+            songSearchInput.focus();
+        });
+
+        // --- Song Content Display ---
+        async function displaySongContent(songId) {
+            songContentElement.classList.remove('error');
+            songContentElement.innerHTML = '<p>Loading song content...</p>';
+
+            // Attempt to get song data from the pre-populated cache
+            let songData = songCache.get(songId);
+
+            if (!songData || !songData.content) {
+                try {
+                    const songDocRef = doc(db, "songs", songId);
+                    const docSnap = await getDoc(songDocRef);
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        songData = { title: data.title || songId, content: data.content || "[No content]" };
+                        songCache.set(songId, songData); // Cache the fetched content
+                    } else {
+                        throw new Error("Song document not found in Firestore.");
+                    }
+                } catch (error) {
+                    console.error("Error fetching song content:", error);
+                    // This part will now be less likely to hit if initial fetch was successful
+                    songContentElement.innerHTML = `<p class="error">Error loading song: ${error.message}</p>`;
+                    return;
+                }
+            }
+
+            const paragraphs = songData.content.split(/\n\s*\n/);
+            songContentElement.innerHTML = '';
+            paragraphs.forEach(paragraphText => {
+                const trimmed = paragraphText.trim();
+                if (!trimmed) return;
+                const p = document.createElement('p');
+                p.innerHTML = trimmed.replace(/\n/g, '<br>');
+                p.addEventListener('click', () => displayParagraphInPresentation(p.innerHTML));
+                songContentElement.appendChild(p);
+            });
+            isSongViewActiveOnMobile = true;
+            currentEditingSongId = songId; // Set current song ID *before* updating view
+            updateAppView();
+        }
+
+        // --- Presentation Mode ---
+        presentationModeToggle.addEventListener('click', () => {
+            isPresentationMode = !isPresentationMode;
+            presentationModeToggle.textContent = `Presentation Mode: ${isPresentationMode ? 'ON' : 'OFF'}`;
+            presentationFontSelect.style.display = isPresentationMode ? 'inline-block' : 'none';
+            // presentationControlsDiv.style.display = 'none';
+            if (isPresentationMode) {
+                openPresentationWindow();
+                if (presentationWindow && !presentationWindow.closed) {
+                    // presentationControlsDiv.style.display = 'flex';
+                }
+            } else {
+                if (presentationWindow && !presentationWindow.closed) presentationWindow.close();
+            }
+        });
+
+        function openPresentationWindow() {
+            if (!isPresentationMode) return;
+            const windowFeatures = 'menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=yes,width=800,height=600';
+            presentationWindow = window.open('', '_blank', windowFeatures);
+
+            if (presentationWindow) {
+                const font = presentationFontSelect.value;
+                presentationWindow.document.title = "Presentation";
+                presentationWindow.document.body.style.cssText = `
+                    margin: 0;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    background-color: black;
+                    color: white;
+                    font-family: ${font};
+                    font-size: ${presentationFontSize}em;
+                    text-align: center;
+                    white-space: pre-wrap;
+                    padding: 20px;
+                    box-sizing: border-box;
+                `;
+                presentationWindow.document.body.innerHTML = '<div id="presentation-text"></div>';
+                // Inject Google Font link
+                const selectedFont = googleFonts.find(f => f.css === font);
+                if (selectedFont) {
+                    const link = presentationWindow.document.createElement('link');
+                    link.rel = 'stylesheet';
+                    link.href = selectedFont.url;
+                    presentationWindow.document.head.appendChild(link);
+                }
+                // Monitor window close
+                if (presentationWindowCheckInterval) clearInterval(presentationWindowCheckInterval);
+                presentationWindowCheckInterval = setInterval(() => {
+                    if (!presentationWindow || presentationWindow.closed) {
+                        isPresentationMode = false;
+                        presentationModeToggle.textContent = 'Presentation Mode: OFF';
+                        // presentationControlsDiv.style.display = 'none';
+                        presentationFontSelect.style.display = 'none';
+                        clearInterval(presentationWindowCheckInterval);
+                        presentationWindowCheckInterval = null;
+                    }
+                }, 500);
+            } else {
+                alert("Could not open presentation window. Please allow pop-ups for this site.");
+                isPresentationMode = false;
+                presentationModeToggle.textContent = 'Presentation Mode: OFF';
+                // presentationControlsDiv.style.display = 'none';
+                presentationFontSelect.style.display = 'none';
+            }
+        }
+
+        function displayParagraphInPresentation(paragraphHtml) {
+            if (presentationWindow && !presentationWindow.closed) {
+                const presentationTextDiv = presentationWindow.document.getElementById('presentation-text');
+                if (presentationTextDiv) presentationTextDiv.innerHTML = paragraphHtml;
+            }
+        }
+
+        // --- Font Size Controls ---
+        function updateFontSize() {
+            songContentElement.style.fontSize = currentFontSize + 'em';
+        }
+        increaseTextBtn.addEventListener('click', () => {
+            if (isPresentationMode && presentationWindow && !presentationWindow.closed) {
+                if (presentationFontSize < 5) {
+                    presentationFontSize += 0.1;
+                    presentationWindow.document.body.style.fontSize = presentationFontSize + 'em';
+                }
+            } else {
+                if (currentFontSize < 2.5) {
+                    currentFontSize += 0.1;
+                    updateFontSize();
+                }
+            }
+        });
+        decreaseTextBtn.addEventListener('click', () => {
+            if (isPresentationMode && presentationWindow && !presentationWindow.closed) {
+                if (presentationFontSize > 0.5) {
+                    presentationFontSize -= 0.1;
+                    presentationWindow.document.body.style.fontSize = presentationFontSize + 'em';
+                }
+            } else {
+                if (currentFontSize > 0.7) {
+                    currentFontSize -= 0.1;
+                    updateFontSize();
+                }
+            }
+        });
+        // increasePresentationTextBtn.addEventListener('click', () => {
+        //     if (presentationFontSize < 5 && presentationWindow && !presentationWindow.closed) {
+        //         presentationFontSize += 0.2;
+        //         presentationWindow.document.body.style.fontSize = presentationFontSize + 'em';
+        //     }
+        // });
+        // decreasePresentationTextBtn.addEventListener('click', () => {
+        //     if (presentationFontSize > 0.5 && presentationWindow && !presentationWindow.closed) {
+        //         presentationFontSize -= 0.2;
+        //         presentationWindow.document.body.style.fontSize = presentationFontSize + 'em';
+        //     }
+        // });
+
+        // --- Font Selection for Presentation ---
+        function applyPresentationFont() {
+            if (presentationWindow && !presentationWindow.closed) {
+                const font = presentationFontSelect.value;
+                presentationWindow.document.body.style.fontFamily = font;
+                // Inject Google Font link if needed
+                const selectedFont = googleFonts.find(f => f.css === font);
+                if (selectedFont && !presentationWindow.document.querySelector(`link[href="${selectedFont.url}"]`)) {
+                    const link = presentationWindow.document.createElement('link');
+                    link.rel = 'stylesheet';
+                    link.href = selectedFont.url;
+                    presentationWindow.document.head.appendChild(link);
+                }
+            }
+        }
+        presentationFontSelect.addEventListener('change', applyPresentationFont);
+
+        // --- Mobile/Desktop View Logic ---
+        function isMobile() { return window.innerWidth <= 600; }
+        function updateAppView() {
+            const mobile = isMobile();
+            let showEditButton = false;
+
+            if (mobile) {
+                if (isSongViewActiveOnMobile) {
+                    sidebar.style.display = 'none';
+                    mainPane.style.display = 'block';
+                    mainPane.style.height = '100vh';
+                    backBtn.style.display = 'block';
+                    presentationModeToggle.style.display = 'none';
+                    if (currentEditingSongId) { // Show edit button if a song is active
+                        showEditButton = true;
+                    }
+                } else {
+                    sidebar.style.display = 'flex';
+                    mainPane.style.display = 'none';
+                    backBtn.style.display = 'none';
+                    songEditorForm.style.display = 'none'; // Hide editor form if mobile view changes
+                    presentationModeToggle.style.display = 'none';
+                    // showEditButton remains false (no song active in main pane)
+                }
+            } else {
+                presentationModeToggle.style.display = 'block';
+                sidebar.style.display = 'flex';
+                mainPane.style.display = 'block';
+                mainPane.style.height = '';
+                backBtn.style.display = 'none';
+                if (currentEditingSongId) { // Show edit button if a song is active
+                    showEditButton = true;
+                }
+            }
+            editSongBtn.style.display = showEditButton ? 'block' : 'none';
+        }
+
+        // --- Back Button (Mobile) ---
+        backBtn.addEventListener('click', () => {
+            isSongViewActiveOnMobile = false;
+            songContentElement.innerHTML = `<p>${INITIAL_SONG_CONTENT_MESSAGE}</p>`;
+            currentEditingSongId = null; // Clear active song
+            updateAppView();
+        });
+
+        // --- Scroll Buttons ---
+        scrollBottomBtn.addEventListener('click', () => {
+            songListElement.scrollTo({ top: songListElement.scrollHeight, behavior: 'smooth' });
+        });
+        scrollTopBtn.addEventListener('click', () => {
+            songListElement.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        function updateScrollButtons() {
+            const el = songListElement;
+            if (el.scrollHeight <= el.clientHeight) {
+                scrollBottomBtn.style.display = 'none';
+                scrollTopBtn.style.display = 'none';
+                return;
+            }
+            if (el.scrollTop < 10) {
+                scrollBottomBtn.style.display = 'block';
+                scrollTopBtn.style.display = 'none';
+            } else if (el.scrollTop + el.clientHeight >= el.scrollHeight - 10) {
+                scrollBottomBtn.style.display = 'none';
+                scrollTopBtn.style.display = 'block';
+            } else {
+                scrollBottomBtn.style.display = 'block';
+                scrollTopBtn.style.display = 'block';
+            }
+        }
+        songListElement.addEventListener('scroll', updateScrollButtons);
+
+        // --- Window/Document Events ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            loadTheme(); // Load theme first!
+            songContentElement.textContent = INITIAL_SONG_CONTENT_MESSAGE;
+            currentEditingSongId = null; // Ensure no song is marked as active initially
+            await fetchSongList(); // Changed from fetchSongListAndContents
+            songEditorForm.style.display = 'none'; // Ensure editor is hidden
+            updateAppView(); // This will set initial visibility of editSongBtn
+            updateFontSize && updateFontSize();
+        });
+        window.addEventListener('resize', updateAppView);
+        window.addEventListener('beforeunload', () => {
+            if (presentationWindow && !presentationWindow.closed) presentationWindow.close();
+            if (presentationWindowCheckInterval) clearInterval(presentationWindowCheckInterval);
+        });
+
+        // --- Style for Clickable Paragraphs ---
+        const styleSheet = document.createElement("style");
+        styleSheet.type = "text/css";
+        styleSheet.innerText = `
+            #song-content p {
+                cursor: pointer;
+                margin: 0 0 1em 0;
+                padding: 0;
+                transition: background-color 0.2s ease;
+            }
+            #song-content p:hover {
+                background-color: var(--bg-hover);
+            }
+        `;
+        document.head.appendChild(styleSheet);
+
+        // --- Sidebar Drag-to-Resize ---
+        let isResizingSidebar = false;
+        let startX = 0;
+        let startWidth = 0;
+
+        sidebarResizer.addEventListener('mousedown', function (e) {
+            if (window.innerWidth <= 600) return; // Disable on mobile
+            isResizingSidebar = true;
+            startX = e.clientX;
+            startWidth = sidebar.offsetWidth;
+            document.body.style.cursor = 'ew-resize';
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mousemove', function (e) {
+            if (!isResizingSidebar) return;
+            const dx = e.clientX - startX;
+            let newWidth = startWidth + dx;
+            newWidth = Math.max(180, Math.min(600, newWidth)); // Clamp width
+            sidebar.style.width = newWidth + 'px';
+        });
+
+        document.addEventListener('mouseup', function () {
+            if (isResizingSidebar) {
+                isResizingSidebar = false;
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+            }
+        });
+
+        // --- Song Editor Functions ---
+        function showSongEditor(songIdToEdit = null) {
+            songEditorForm.style.display = 'block';
+            if (songIdToEdit) {
+                const songData = songCache.get(songIdToEdit);
+                if (songData) {
+                    editorFormTitle.textContent = 'Edit Song';
+                    editorSongId.value = songIdToEdit;
+                    editorSongTitle.value = songData.title;
+                    // Find the song in allSongsData to get its number, or default
+                    const songMeta = allSongsData.find(s => s.id === songIdToEdit);
+                    editorSongNumber.value = songMeta ? songMeta.number : (allSongsData.length + 1);
+                    editorSongContent.value = songData.content;
+                    saveSongBtn.textContent = 'Update Song';
+                } else {
+                    alert('Error: Song data not found in cache for editing.');
+                    hideSongEditor();
+                    return;
+                }
+            } else { // Adding new song
+                editorFormTitle.textContent = 'Add New Song';
+                editorSongId.value = '';
+                editorSongTitle.value = '';
+                editorSongNumber.value = allSongsData.length > 0 ? Math.max(...allSongsData.map(s => s.number || 0)) + 1 : 1;
+                editorSongContent.value = '';
+                saveSongBtn.textContent = 'Save Song';
+            }
+            editorSongTitle.focus();
+        }
+
+        function hideSongEditor() {
+            songEditorForm.style.display = 'none';
+            editorSongId.value = '';
+            editorSongTitle.value = '';
+            editorSongNumber.value = '';
+            editorSongContent.value = '';
+        }
+
+        showAddSongFormBtn.addEventListener('click', () => {
+            currentEditingSongId = null; // Clear any song being edited
+            showSongEditor();
+        });
+
+        editSongBtn.addEventListener('click', () => {
+            if (currentEditingSongId) {
+                showSongEditor(currentEditingSongId);
+            } else {
+                alert('No song selected to edit.');
+            }
+        });
+
+        cancelEditorBtn.addEventListener('click', hideSongEditor);
+
+        saveSongBtn.addEventListener('click', async () => {
+            const songId = editorSongId.value;
+            const title = editorSongTitle.value.trim();
+            const number = parseInt(editorSongNumber.value, 10);
+            const content = editorSongContent.value.trim();
+
+            if (!title || !content) {
+                alert('Title and Content cannot be empty.');
+                return;
+            }
+            if (isNaN(number)) {
+                alert('Song number must be a valid number.');
+                return;
+            }
+
+            const songData = { title, content, number };
+
+            try {
+                if (songId) { // Editing existing song
+                    const songRef = doc(db, "songs", songId);
+                    await updateDoc(songRef, songData);
+                    alert('Song updated successfully!');
+                } else { // Adding new song
+                    await addDoc(collection(db, "songs"), songData);
+                    alert('Song added successfully!');
+                }
+                hideSongEditor();
+                await fetchSongList(); // Refresh list and cache
+                // If editing, and the currently displayed song was edited, refresh its view
+                if (songId && currentEditingSongId === songId) displaySongContent(songId);
+            } catch (error) {
+                console.error("Error saving song:", error);
+                alert(`Error saving song: ${error.message}`);
+            }
+        });
+    </script>
+</body>
+
+</html>
