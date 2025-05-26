@@ -97,6 +97,21 @@
             align-self: center;
             /* Center the h2 in the flex column */
         }
+        
+        #search-container {
+            position: relative;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        #song-search {
+            width: 100%;
+            padding: 8px 32px 8px 8px; /* Accommodate clear button */
+            font-size: 1em;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            box-sizing: border-box;
+        }
 
         .song-list-container {
             flex: 1 1 auto;
@@ -207,10 +222,6 @@
             box-sizing: border-box;
         }
 
-        /* Hide presentation controls on mobile */
-        /* #presentation-controls {
-            display: none;
-        } */
 
         #presentation-mode-toggle {
             font-size: 1.2em;
@@ -219,12 +230,30 @@
             min-width: 44px;
             min-height: 44px;
         }
+        #edit-song-btn { /* Moved from inline */
+            margin-left: 12px;
+            display: none; /* Initial state, JS will toggle */
+        }
+        #presentation-font-select { /* Moved from inline */
+            margin-left: 12px;
+            display: none; /* Initial state, JS will toggle */
+        }
+
+
         #controls button {
             font-size: 1.2em;
             padding: 10px 18px;
             border-radius: 6px;
             min-width: 44px;
             min-height: 44px;
+        }
+
+        #controls { /* Moved from inline */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
         }
 
         #back-btn {
@@ -305,16 +334,6 @@
             }
         }
 
-        /* Search input styles */
-        #song-search {
-            width: 100%;
-            margin-bottom: 10px;
-            padding: 8px;
-            font-size: 1em;
-            border-radius: 4px;
-            border: 1px solid var(--border);
-            box-sizing: border-box;
-        }
 
         #clear-search-btn {
             position: absolute;
@@ -359,45 +378,105 @@
                 display: none;
             }
         }
+
+        #show-add-song-form-btn { /* Moved from inline */
+            margin-top: 10px;
+            padding: 8px;
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #song-editor-form { /* Moved from inline */
+            display: none; /* Initial state, JS will toggle */
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background-color: var(--bg-sidebar);
+        }
+        #song-editor-form label {
+            display: block;
+            margin-bottom: 3px;
+            font-weight: bold;
+        }
+        #song-editor-form input[type="text"],
+        #song-editor-form input[type="number"],
+        #song-editor-form textarea { /* Moved from inline */
+            width: calc(100% - 12px); /* Adjusted for padding */
+            margin-bottom: 8px;
+            padding: 6px;
+            box-sizing: border-box;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+        }
+        #song-editor-form textarea { /* Specific to textarea */
+            font-family: inherit; /* Moved from inline */
+            resize: vertical;
+        }
+        #song-editor-form button { /* General style for buttons in form */
+            padding: 8px 12px;
+            border:none;
+            border-radius:4px;
+            cursor:pointer;
+            color: var(--btn-text);
+        }
+        #save-song-btn { /* Specifics for save button, moved from inline */
+            background-color: var(--btn-bg);
+        }
+        #cancel-editor-btn { /* Specifics for cancel button, moved from inline */
+            margin-left: 5px;
+            background-color: #888; /* Consider a CSS variable if used elsewhere */
+            color: white;
+        }
     </style>
 </head>
 
 <body>
     <div id="sidebar">
         <h2>Melodies Of Worship</h2>
-        <div style="position: relative; width: 100%; margin-bottom: 10px;">
-            <input id="song-search" type="text" placeholder="Search songs..." style="width: 100%; padding: 8px 32px 8px 8px; font-size: 1em; border-radius: 4px; border: 1px solid var(--border); box-sizing: border-box;" />
-            <button id="clear-search-btn" type="button" aria-label="Clear search" style="position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 1.2em; cursor: pointer; color: #888; display: none; padding: 0; line-height: 1;">&#10006;</button>
+        <div id="search-container">
+            <input id="song-search" type="text" placeholder="Search songs..." />
+            <button id="clear-search-btn" type="button" aria-label="Clear search">&#10006;</button>
         </div>
         <div class="song-list-container">
             <ul id="song-list"></ul>
             <button id="scroll-bottom-btn" type="button" class="scroll-overlay-btn" aria-label="Go to bottom" title="Go to bottom">↓</button>
             <button id="scroll-top-btn" type="button" class="scroll-overlay-btn" aria-label="Go to top" title="Go to top">↑</button>
         </div>
+        <div id="auth-controls" style="margin-top: 10px; text-align: center; padding: 5px 0;">
+            <button id="login-btn" type="button" style="padding: 8px 12px; background-color: var(--btn-bg); color: var(--btn-text); border:none; border-radius:4px; cursor:pointer;">
+                Login with Google
+            </button>
+            <div id="user-info" style="display: none; margin-top: 8px; margin-bottom: 5px; font-size: 0.9em; color: var(--text-main);"></div>
+            <button id="logout-btn" type="button" style="display: none; margin-top: 5px; padding: 8px 12px; background-color: #888; color: white; border:none; border-radius:4px; cursor:pointer;">
+                Logout
+            </button>
+        </div>
         <button id="theme-toggle-btn" type="button">Theme: System Default</button>
-        <div id="sidebar-resizer" style="width: 6px; cursor: ew-resize; position: absolute; top: 0; right: 0; bottom: 0; z-index: 20; background: transparent;"></div>
-        <button id="show-add-song-form-btn" type="button" style="margin-top: 10px; padding: 8px; background-color: var(--btn-bg); color: var(--btn-text); border: none; border-radius: 4px; cursor: pointer;">
-            Add New Song
-        </button>
-        <div id="song-editor-form" style="display: none; margin-top: 15px; padding: 10px; border: 1px solid var(--border); border-radius: 4px; background-color: var(--bg-sidebar);">
+        <div id="sidebar-resizer"></div>
+        <button id="show-add-song-form-btn" type="button" style="display:none;">Add New Song</button> <!-- Initially hidden -->
+        <div id="song-editor-form">
             <h3 id="editor-form-title">Add New Song</h3>
             <input type="hidden" id="editor-song-id">
-            <div><label for="editor-song-title">Title:</label><input type="text" id="editor-song-title" style="width: calc(100% - 10px); margin-bottom: 5px; padding: 6px;"></div>
-            <div><label for="editor-song-number">Number (for ordering):</label><input type="number" id="editor-song-number" style="width: calc(100% - 10px); margin-bottom: 5px; padding: 6px;"></div>
-            <div><label for="editor-song-content">Content:</label><textarea id="editor-song-content" rows="10" style="width: calc(100% - 10px); margin-bottom: 10px; padding: 6px; font-family: inherit;"></textarea></div>
-            <button id="save-song-btn" type="button" style="padding: 8px 12px; background-color: var(--btn-bg); color: var(--btn-text); border:none; border-radius:4px; cursor:pointer;">Save Song</button>
-            <button id="cancel-editor-btn" type="button" style="padding: 8px 12px; margin-left: 5px; background-color: #888; color: white; border:none; border-radius:4px; cursor:pointer;">Cancel</button>
+            <div><label for="editor-song-title">Title:</label><input type="text" id="editor-song-title"></div>
+            <div><label for="editor-song-number">Number (for ordering):</label><input type="number" id="editor-song-number"></div>
+            <div><label for="editor-song-content">Content:</label><textarea id="editor-song-content" rows="10"></textarea></div>
+            <button id="save-song-btn" type="button">Save Song</button>
+            <button id="cancel-editor-btn" type="button">Cancel</button>
         </div>
     </div>
 
     <div id="main-pane">
-        <div id="controls" style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px;">
+        <div id="controls">
             <button id="back-btn" type="button">← Back to list</button>
             <button id="decrease-text-btn" type="button" title="Decrease text size" aria-label="A-">A-</button>
             <button id="increase-text-btn" type="button" title="Increase text size" aria-label="A+">A+</button>
-            <button id="edit-song-btn" type="button" style="margin-left:12px; display:none;">Edit Song</button>
-            <button id="presentation-mode-toggle" type="button" style="margin-left:12px;">Presentation Mode: OFF</button>
-            <select id="presentation-font-select" style="margin-left: 12px; display: none;">
+            <button id="edit-song-btn" type="button">Edit Song</button>
+            <button id="presentation-mode-toggle" type="button">Presentation Mode: OFF</button>
+            <select id="presentation-font-select">
                 <option value="'Noto Sans Telugu', 'Roboto', Arial, sans-serif">Default</option>
                 <option value="'Roboto', Arial, sans-serif">Roboto</option>
                 <option value="'Noto Sans Telugu', Arial, sans-serif">Noto Sans Telugu</option>
@@ -412,8 +491,9 @@
     <script type="module">
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js"; // Analytics can be optional if not actively used
-        import { getFirestore, collection, getDocs, doc, getDoc, addDoc, updateDoc, orderBy, query as firestoreQuery } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
+        import { getFirestore, collection, getDocs, doc, getDoc, addDoc, updateDoc, orderBy, query as firestoreQuery, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
         // TODO: Add SDKs for Firebase products that you want to use
         // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -432,7 +512,8 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app); // Initialize if needed
-        const db = getFirestore(app); // Initialize Firestore
+        const db = getFirestore(app); 
+        const auth = getAuth(app); // Initialize Firebase Auth
 
         // GitHub constants are no longer needed as we're using Firestore
 
@@ -452,9 +533,6 @@
         const mainPane = document.getElementById('main-pane');
         const controlsDiv = document.getElementById('controls');
         const presentationModeToggle = document.getElementById('presentation-mode-toggle');
-        // const presentationControlsDiv = document.getElementById('presentation-controls');
-        // const increasePresentationTextBtn = document.getElementById('increase-presentation-text-btn');
-        // const decreasePresentationTextBtn = document.getElementById('decrease-presentation-text-btn');
         const backBtn = document.getElementById('back-btn');
         const themeToggleBtn = document.getElementById('theme-toggle-btn');
         const scrollBottomBtn = document.getElementById('scroll-bottom-btn');
@@ -477,9 +555,15 @@
         const cancelEditorBtn = document.getElementById('cancel-editor-btn');
         const editSongBtn = document.getElementById('edit-song-btn');
 
+        // Auth UI elements
+        const loginBtn = document.getElementById('login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const userInfoElement = document.getElementById('user-info');
+
         // --- State ---
         let allSongsData = []; // Will store { id, title, number } from Firestore
         const songCache = new Map();
+        let isSongViewActiveOnMobile = false; // Initialize mobile view state
         const INITIAL_SONG_CONTENT_MESSAGE = 'Select a song from the list, or use the search bar.';        
         const themeModes = ['system', 'light', 'dark', 'ocean-calm'];
         const themeLabels = {
@@ -494,6 +578,7 @@
         let presentationFontSize = 1.5;
         let currentFontSize = 1;
         let currentEditingSongId = null; // To keep track of which song is being edited
+        let currentUser = null; // To store the currently logged-in user object
 
         // --- Theme ---
         function applyTheme(theme) {
@@ -652,14 +737,12 @@
             isPresentationMode = !isPresentationMode;
             presentationModeToggle.textContent = `Presentation Mode: ${isPresentationMode ? 'ON' : 'OFF'}`;
             presentationFontSelect.style.display = isPresentationMode ? 'inline-block' : 'none';
-            // presentationControlsDiv.style.display = 'none';
             if (isPresentationMode) {
                 openPresentationWindow();
-                if (presentationWindow && !presentationWindow.closed) {
-                    // presentationControlsDiv.style.display = 'flex';
-                }
             } else {
                 if (presentationWindow && !presentationWindow.closed) presentationWindow.close();
+                // Ensure font select is hidden if presentation mode is turned off
+                presentationFontSelect.style.display = 'none';
             }
         });
 
@@ -701,7 +784,6 @@
                     if (!presentationWindow || presentationWindow.closed) {
                         isPresentationMode = false;
                         presentationModeToggle.textContent = 'Presentation Mode: OFF';
-                        // presentationControlsDiv.style.display = 'none';
                         presentationFontSelect.style.display = 'none';
                         clearInterval(presentationWindowCheckInterval);
                         presentationWindowCheckInterval = null;
@@ -711,7 +793,6 @@
                 alert("Could not open presentation window. Please allow pop-ups for this site.");
                 isPresentationMode = false;
                 presentationModeToggle.textContent = 'Presentation Mode: OFF';
-                // presentationControlsDiv.style.display = 'none';
                 presentationFontSelect.style.display = 'none';
             }
         }
@@ -753,18 +834,6 @@
                 }
             }
         });
-        // increasePresentationTextBtn.addEventListener('click', () => {
-        //     if (presentationFontSize < 5 && presentationWindow && !presentationWindow.closed) {
-        //         presentationFontSize += 0.2;
-        //         presentationWindow.document.body.style.fontSize = presentationFontSize + 'em';
-        //     }
-        // });
-        // decreasePresentationTextBtn.addEventListener('click', () => {
-        //     if (presentationFontSize > 0.5 && presentationWindow && !presentationWindow.closed) {
-        //         presentationFontSize -= 0.2;
-        //         presentationWindow.document.body.style.fontSize = presentationFontSize + 'em';
-        //     }
-        // });
 
         // --- Font Selection for Presentation ---
         function applyPresentationFont() {
@@ -788,15 +857,16 @@
         function updateAppView() {
             const mobile = isMobile();
             let showEditButton = false;
-
+            
             if (mobile) {
                 if (isSongViewActiveOnMobile) {
                     sidebar.style.display = 'none';
                     mainPane.style.display = 'block';
                     mainPane.style.height = '100vh';
                     backBtn.style.display = 'block';
-                    presentationModeToggle.style.display = 'none';
-                    if (currentEditingSongId) { // Show edit button if a song is active
+                    presentationModeToggle.style.display = 'none'; // Hide on mobile when song is active
+                    presentationFontSelect.style.display = 'none'; // Hide on mobile when song is active
+                    if (currentUser && currentEditingSongId) { // Show edit button if a song is active AND user logged in
                         showEditButton = true;
                     }
                 } else {
@@ -804,21 +874,25 @@
                     mainPane.style.display = 'none';
                     backBtn.style.display = 'none';
                     songEditorForm.style.display = 'none'; // Hide editor form if mobile view changes
-                    presentationModeToggle.style.display = 'none';
+                    presentationModeToggle.style.display = 'none'; // Hide on mobile when list is active
+                    presentationFontSelect.style.display = 'none'; // Hide on mobile when list is active
                     // showEditButton remains false (no song active in main pane)
                 }
             } else {
-                presentationModeToggle.style.display = 'block';
                 sidebar.style.display = 'flex';
                 mainPane.style.display = 'block';
                 mainPane.style.height = '';
                 backBtn.style.display = 'none';
-                if (currentEditingSongId) { // Show edit button if a song is active
+                // Show presentation toggle and font select based on presentation mode state, not just desktop
+                presentationModeToggle.style.display = 'block';
+                presentationFontSelect.style.display = isPresentationMode ? 'inline-block' : 'none';
+                if (currentUser && currentEditingSongId) { // Show edit button if a song is active AND user logged in
                     showEditButton = true;
                 }
             }
             editSongBtn.style.display = showEditButton ? 'block' : 'none';
         }
+
 
         // --- Back Button (Mobile) ---
         backBtn.addEventListener('click', () => {
@@ -858,6 +932,7 @@
         // --- Window/Document Events ---
         document.addEventListener('DOMContentLoaded', async () => {
             loadTheme(); // Load theme first!
+            setupAuthListeners(); // Setup Firebase Auth listeners
             songContentElement.textContent = INITIAL_SONG_CONTENT_MESSAGE;
             currentEditingSongId = null; // Ensure no song is marked as active initially
             await fetchSongList(); // Changed from fetchSongListAndContents
@@ -919,6 +994,10 @@
 
         // --- Song Editor Functions ---
         function showSongEditor(songIdToEdit = null) {
+            if (!currentUser) {
+                alert("Please log in to add or edit songs.");
+                return;
+            }
             songEditorForm.style.display = 'block';
             if (songIdToEdit) {
                 const songData = songCache.get(songIdToEdit);
@@ -956,11 +1035,20 @@
         }
 
         showAddSongFormBtn.addEventListener('click', () => {
+            if (!currentUser) {
+                alert("Please log in to add a new song.");
+                return;
+            }
             currentEditingSongId = null; // Clear any song being edited
+            updateAppView(); // Ensure Edit Song button is hidden
             showSongEditor();
         });
 
         editSongBtn.addEventListener('click', () => {
+            if (!currentUser) {
+                alert("Please log in to edit this song.");
+                return;
+            }
             if (currentEditingSongId) {
                 showSongEditor(currentEditingSongId);
             } else {
@@ -971,6 +1059,11 @@
         cancelEditorBtn.addEventListener('click', hideSongEditor);
 
         saveSongBtn.addEventListener('click', async () => {
+            if (!currentUser) {
+                alert("Please log in to save songs.");
+                hideSongEditor();
+                return;
+            }
             const songId = editorSongId.value;
             const title = editorSongTitle.value.trim();
             const number = parseInt(editorSongNumber.value, 10);
@@ -989,10 +1082,23 @@
 
             try {
                 if (songId) { // Editing existing song
+                    songData.updatedAt = serverTimestamp();
+                    songData.updatedBy = {
+                        uid: currentUser.uid,
+                        name: currentUser.displayName || currentUser.email || 'Unknown User'
+                    };
                     const songRef = doc(db, "songs", songId);
                     await updateDoc(songRef, songData);
                     alert('Song updated successfully!');
                 } else { // Adding new song
+                    songData.createdAt = serverTimestamp();
+                    songData.createdBy = {
+                        uid: currentUser.uid,
+                        name: currentUser.displayName || currentUser.email || 'Unknown User'
+                    };
+                    // Optionally, you can also set initial updatedAt/updatedBy to the same as createdAt/createdBy
+                    // songData.updatedAt = serverTimestamp(); 
+                    // songData.updatedBy = songData.createdBy;
                     await addDoc(collection(db, "songs"), songData);
                     alert('Song added successfully!');
                 }
@@ -1005,6 +1111,53 @@
                 alert(`Error saving song: ${error.message}`);
             }
         });
+
+        // --- Firebase Authentication ---
+        function setupAuthListeners() {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    // User is signed in
+                    currentUser = user;
+                    loginBtn.style.display = 'none';
+                    logoutBtn.style.display = 'block';
+                    userInfoElement.textContent = `Logged in as: ${user.displayName || user.email}`;
+                    userInfoElement.style.display = 'block';
+                    showAddSongFormBtn.style.display = 'block'; // Show "Add New Song" button
+                } else {
+                    // User is signed out
+                    currentUser = null;
+                    loginBtn.style.display = 'block';
+                    logoutBtn.style.display = 'none';
+                    userInfoElement.style.display = 'none';
+                    userInfoElement.textContent = '';
+                    showAddSongFormBtn.style.display = 'none'; // Hide "Add New Song" button
+                    editSongBtn.style.display = 'none'; // Ensure edit button is hidden
+                    hideSongEditor(); // Hide editor form if it was open
+                }
+                updateAppView(); // Update view based on auth state (e.g., edit button)
+            });
+
+            loginBtn.addEventListener('click', signInWithGoogle);
+            logoutBtn.addEventListener('click', signOutUser);
+        }
+
+        async function signInWithGoogle() {
+            const provider = new GoogleAuthProvider();
+            try {
+                const result = await signInWithPopup(auth, provider);
+                // This will trigger onAuthStateChanged, which handles UI updates
+                console.log("User signed in: ", result.user.displayName);
+            } catch (error) {
+                console.error("Error during Google sign-in:", error);
+                alert(`Login failed: ${error.message}`);
+            }
+        }
+
+        async function signOutUser() {
+            await signOut(auth);
+            // This will trigger onAuthStateChanged, which handles UI updates
+            console.log("User signed out.");
+        }
     </script>
 </body>
 
