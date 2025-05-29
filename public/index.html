@@ -579,6 +579,10 @@
         let currentFontSize = 1;
         let currentEditingSongId = null; // To keep track of which song is being edited
         let currentUser = null; // To store the currently logged-in user object
+        
+        // !!! IMPORTANT: Replace these with the actual UIDs of your admin users !!!
+        const ADMIN_UIDS = ["REPLACE_WITH_ADMIN_UID_1", "REPLACE_WITH_ADMIN_UID_2"]; 
+
 
         // --- Theme ---
         function applyTheme(theme) {
@@ -866,7 +870,7 @@
                     backBtn.style.display = 'block';
                     presentationModeToggle.style.display = 'none'; // Hide on mobile when song is active
                     presentationFontSelect.style.display = 'none'; // Hide on mobile when song is active
-                    if (currentUser && currentEditingSongId) { // Show edit button if a song is active AND user logged in
+                    if (currentUser && currentUser.isAdmin && currentEditingSongId) { // Show edit button if a song is active AND user is admin
                         showEditButton = true;
                     }
                 } else {
@@ -886,7 +890,7 @@
                 // Show presentation toggle and font select based on presentation mode state, not just desktop
                 presentationModeToggle.style.display = 'block';
                 presentationFontSelect.style.display = isPresentationMode ? 'inline-block' : 'none';
-                if (currentUser && currentEditingSongId) { // Show edit button if a song is active AND user logged in
+                if (currentUser && currentUser.isAdmin && currentEditingSongId) { // Show edit button if a song is active AND user is admin
                     showEditButton = true;
                 }
             }
@@ -994,8 +998,8 @@
 
         // --- Song Editor Functions ---
         function showSongEditor(songIdToEdit = null) {
-            if (!currentUser) {
-                alert("Please log in to add or edit songs.");
+            if (!currentUser || !currentUser.isAdmin) {
+                alert("You do not have permission to add or edit songs.");
                 return;
             }
             songEditorForm.style.display = 'block';
@@ -1035,8 +1039,8 @@
         }
 
         showAddSongFormBtn.addEventListener('click', () => {
-            if (!currentUser) {
-                alert("Please log in to add a new song.");
+            if (!currentUser || !currentUser.isAdmin) {
+                alert("You do not have permission to add a new song.");
                 return;
             }
             currentEditingSongId = null; // Clear any song being edited
@@ -1045,8 +1049,8 @@
         });
 
         editSongBtn.addEventListener('click', () => {
-            if (!currentUser) {
-                alert("Please log in to edit this song.");
+            if (!currentUser || !currentUser.isAdmin) {
+                alert("You do not have permission to edit this song.");
                 return;
             }
             if (currentEditingSongId) {
@@ -1059,8 +1063,8 @@
         cancelEditorBtn.addEventListener('click', hideSongEditor);
 
         saveSongBtn.addEventListener('click', async () => {
-            if (!currentUser) {
-                alert("Please log in to save songs.");
+            if (!currentUser || !currentUser.isAdmin) {
+                alert("You do not have permission to save songs.");
                 hideSongEditor();
                 return;
             }
@@ -1118,11 +1122,12 @@
                 if (user) {
                     // User is signed in
                     currentUser = user;
+                    currentUser.isAdmin = ADMIN_UIDS.includes(user.uid); // Check if user is an admin
                     loginBtn.style.display = 'none';
                     logoutBtn.style.display = 'block';
-                    userInfoElement.textContent = `Logged in as: ${user.displayName || user.email}`;
+                    userInfoElement.textContent = `Logged in as: ${user.displayName || user.email}${currentUser.isAdmin ? ' (Admin)' : ''}`;
                     userInfoElement.style.display = 'block';
-                    showAddSongFormBtn.style.display = 'block'; // Show "Add New Song" button
+                    showAddSongFormBtn.style.display = currentUser.isAdmin ? 'block' : 'none'; // Show "Add New Song" button only for admins
                 } else {
                     // User is signed out
                     currentUser = null;

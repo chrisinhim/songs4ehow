@@ -1,0 +1,25 @@
+// Document: meta/songs_metadata
+{
+  "all_songs_list": [
+    {
+      "id": "firestoreDocId1",
+      "title": "Amazing Grace",
+      "number": 1,
+      "createdby": "user123",
+      "createdate": "2023-10-01T12:00:00Z", // ISO 8601 format
+      "lastupdatedby": "user456",
+      "lastupdatedate": "2023-10-02T14:30:00Z"
+    },
+    {
+      "id": "firestoreDocId2",
+      "title": "How Great Thou Art",
+      "number": 2,
+      "createdby": "user123",
+      "createdate": "2023-10-01T12:00:00Z", // ISO 8601 format
+      "lastupdatedby": "user456",
+      "lastupdatedate": "2023-10-02T14:30:00Z"
+    },
+    // ... and so on for all 667 songs
+  ]
+  // last_updated: Firestore.Timestamp // Good practice to track when this was last synced
+}
