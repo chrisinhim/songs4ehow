@@ -30,6 +30,7 @@ This document covers UI/UX requirements for both mobile and desktop platforms of
 *   **FR-MOB-001.1 (UI):** The "Songs List" view shall display the heading "Melodies of worship".
 *   **FR-MOB-001.2 (UI):** The "Songs List" view shall include a search bar for filtering songs.
 *   **FR-MOB-001.2.1 (UI):** The song list view may include options to filter by tags/themes.
+*   **FR-MOB-001.2.2 (UI):** User Login information should be displayed on the top right corner, including the login button.
 *   **FR-MOB-001.3 (UI):** The "Songs List" view shall provide access to Theme settings (presumably at the bottom).
 *   **FR-MOB-001.4 (UI):** Scroll-to-top and scroll-to-bottom buttons shall be available for the song list when applicable.
 *   **FR-MOB-002.2 (UI):** A "back to list" button shall be available when viewing a song.

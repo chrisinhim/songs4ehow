@@ -53,25 +53,79 @@
 
         /* New Theme: Ocean Calm */
         [data-theme="ocean-calm"] {
-            --bg-main: #f4f7f9;         /* Very light cool gray */
-            --bg-sidebar: #e9edf0;      /* Light cool gray */
-            --bg-hover: #d8dfe3;        /* Subtle darker cool gray for hover */
-            --text-main: #34495e;       /* Dark slate gray */
-            --text-heading: #2c3e50;    /* Deeper slate gray / almost black */
-            --border: #bdc3c7;          /* Soft medium gray */
-            --border-list: #dce0e2;     /* Lighter gray for list items */
-            --btn-bg: #3498db;          /* Pleasant medium blue */
-            --btn-text: #ffffff;        /* White */
+            --bg-main: #f4f7f9;
+            /* Very light cool gray */
+            --bg-sidebar: #e9edf0;
+            /* Light cool gray */
+            --bg-hover: #d8dfe3;
+            /* Subtle darker cool gray for hover */
+            --text-main: #34495e;
+            /* Dark slate gray */
+            --text-heading: #2c3e50;
+            /* Deeper slate gray / almost black */
+            --border: #bdc3c7;
+            /* Soft medium gray */
+            --border-list: #dce0e2;
+            /* Lighter gray for list items */
+            --btn-bg: #3498db;
+            /* Pleasant medium blue */
+            --btn-text: #ffffff;
+            /* White */
         }
 
 
         body {
-            font-family: 'Roboto', 'Noto Sans Telugu', Arial, sans-serif;
-            display: flex;
             margin: 0;
-            height: 100vh;
+            padding: 0;
+            font-family: 'Roboto', 'Noto Sans Telugu', Arial, sans-serif;
             background: var(--bg-main);
             color: var(--text-main);
+        }
+
+        #headbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: var(--bg-sidebar);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+            padding: 0 24px;
+        }
+
+        .headbar-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--text-heading);
+        }
+
+        .headbar-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        #auth-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #user-info {
+            display: none;
+            font-size: 0.9em;
+            color: var(--text-main);
+        }
+
+        #content-container {
+            display: flex;
+            flex-direction: row;
+            height: calc(100vh - 56px);
+            margin-top: 56px;
         }
 
         #sidebar {
@@ -97,7 +151,7 @@
             align-self: center;
             /* Center the h2 in the flex column */
         }
-        
+
         #search-container {
             position: relative;
             width: 100%;
@@ -106,7 +160,8 @@
 
         #song-search {
             width: 100%;
-            padding: 8px 32px 8px 8px; /* Accommodate clear button */
+            padding: 8px 32px 8px 8px;
+            /* Accommodate clear button */
             font-size: 1em;
             border-radius: 4px;
             border: 1px solid var(--border);
@@ -230,13 +285,19 @@
             min-width: 44px;
             min-height: 44px;
         }
-        #edit-song-btn { /* Moved from inline */
+
+        #edit-song-btn {
+            /* Moved from inline */
             margin-left: 12px;
-            display: none; /* Initial state, JS will toggle */
+            display: none;
+            /* Initial state, JS will toggle */
         }
-        #presentation-font-select { /* Moved from inline */
+
+        #presentation-font-select {
+            /* Moved from inline */
             margin-left: 12px;
-            display: none; /* Initial state, JS will toggle */
+            display: none;
+            /* Initial state, JS will toggle */
         }
 
 
@@ -248,12 +309,29 @@
             min-height: 44px;
         }
 
-        #controls { /* Moved from inline */
+        #controls {
+            /* Moved from inline */
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 8px;
             margin-bottom: 8px;
+            position: relative;
+        }
+
+        #text-size-controls {
+            display: flex;
+            gap: 4px;
+            margin-left: auto;
+        }
+
+        #decrease-text-btn,
+        #increase-text-btn {
+            font-size: 1.2em;
+            padding: 6px 12px;
+            border-radius: 6px;
+            min-width: 36px;
+            min-height: 36px;
         }
 
         #back-btn {
@@ -266,8 +344,16 @@
 
         /* --- Mobile Responsive Styles --- */
         @media (max-width: 600px) {
-            body {
+            #headbar {
                 flex-direction: column;
+                height: auto;
+                padding: 8px;
+            }
+
+            #content-container {
+                flex-direction: column;
+                height: auto;
+                margin-top: 56px;
             }
 
             #sidebar {
@@ -280,10 +366,7 @@
                 border-right: none;
                 border-bottom: 1px solid var(--border);
                 padding: 10px;
-                height: 100vh;
-                display: flex;
-                flex-direction: column;
-                box-sizing: border-box;
+                height: auto;
             }
 
             .song-list-container {
@@ -379,7 +462,8 @@
             }
         }
 
-        #show-add-song-form-btn { /* Moved from inline */
+        #show-add-song-form-btn {
+            /* Moved from inline */
             margin-top: 10px;
             padding: 8px;
             background-color: var(--btn-bg);
@@ -389,92 +473,182 @@
             cursor: pointer;
         }
 
-        #song-editor-form { /* Moved from inline */
-            display: none; /* Initial state, JS will toggle */
+        #song-editor-form {
+            /* Moved from inline */
+            display: none;
+            /* Initial state, JS will toggle */
             margin-top: 15px;
             padding: 10px;
             border: 1px solid var(--border);
             border-radius: 4px;
             background-color: var(--bg-sidebar);
         }
+
         #song-editor-form label {
             display: block;
             margin-bottom: 3px;
             font-weight: bold;
         }
+
         #song-editor-form input[type="text"],
         #song-editor-form input[type="number"],
-        #song-editor-form textarea { /* Moved from inline */
-            width: calc(100% - 12px); /* Adjusted for padding */
+        #song-editor-form textarea {
+            /* Moved from inline */
+            width: calc(100% - 12px);
+            /* Adjusted for padding */
             margin-bottom: 8px;
             padding: 6px;
             box-sizing: border-box;
             border: 1px solid var(--border);
             border-radius: 3px;
         }
-        #song-editor-form textarea { /* Specific to textarea */
-            font-family: inherit; /* Moved from inline */
+
+        #song-editor-form textarea {
+            /* Specific to textarea */
+            font-family: inherit;
+            /* Moved from inline */
             resize: vertical;
         }
-        #song-editor-form button { /* General style for buttons in form */
+
+        #song-editor-form button {
+            /* General style for buttons in form */
             padding: 8px 12px;
-            border:none;
-            border-radius:4px;
-            cursor:pointer;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
             color: var(--btn-text);
         }
-        #save-song-btn { /* Specifics for save button, moved from inline */
+
+        #save-song-btn {
+            /* Specifics for save button, moved from inline */
             background-color: var(--btn-bg);
         }
-        #cancel-editor-btn { /* Specifics for cancel button, moved from inline */
+
+        #cancel-editor-btn {
+            /* Specifics for cancel button, moved from inline */
             margin-left: 5px;
-            background-color: #888; /* Consider a CSS variable if used elsewhere */
+            background-color: #888;
+            /* Consider a CSS variable if used elsewhere */
             color: white;
         }
+
+        #right-sidebar {
+            width: 260px;
+            min-width: 200px;
+            max-width: 340px;
+            background: var(--bg-sidebar);
+            border-left: 1px solid var(--border);
+            padding: 16px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        @media (max-width: 900px) {
+            #right-sidebar {
+                display: none;
+            }
+        }
+
+        #bg-type-select,
+        #bg-picture-input,
+        #bg-color-input,
+        #bg-video-input {
+            margin-top: 6px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+
 </head>
 
 <body>
-    <div id="sidebar">
-        <h2>Melodies Of Worship</h2>
-        <div id="search-container">
-            <input id="song-search" type="text" placeholder="Search songs..." />
-            <button id="clear-search-btn" type="button" aria-label="Clear search">&#10006;</button>
-        </div>
-        <div class="song-list-container">
-            <ul id="song-list"></ul>
-            <button id="scroll-bottom-btn" type="button" class="scroll-overlay-btn" aria-label="Go to bottom" title="Go to bottom">↓</button>
-            <button id="scroll-top-btn" type="button" class="scroll-overlay-btn" aria-label="Go to top" title="Go to top">↑</button>
-        </div>
-        <div id="auth-controls" style="margin-top: 10px; text-align: center; padding: 5px 0;">
-            <button id="login-btn" type="button" style="padding: 8px 12px; background-color: var(--btn-bg); color: var(--btn-text); border:none; border-radius:4px; cursor:pointer;">
-                Login with Google
-            </button>
-            <div id="user-info" style="display: none; margin-top: 8px; margin-bottom: 5px; font-size: 0.9em; color: var(--text-main);"></div>
-            <button id="logout-btn" type="button" style="display: none; margin-top: 5px; padding: 8px 12px; background-color: #888; color: white; border:none; border-radius:4px; cursor:pointer;">
-                Logout
-            </button>
-        </div>
-        <button id="theme-toggle-btn" type="button">Theme: System Default</button>
-        <div id="sidebar-resizer"></div>
-        <button id="show-add-song-form-btn" type="button" style="display:none;">Add New Song</button> <!-- Initially hidden -->
-        <div id="song-editor-form">
-            <h3 id="editor-form-title">Add New Song</h3>
-            <input type="hidden" id="editor-song-id">
-            <div><label for="editor-song-title">Title:</label><input type="text" id="editor-song-title"></div>
-            <div><label for="editor-song-number">Number (for ordering):</label><input type="number" id="editor-song-number"></div>
-            <div><label for="editor-song-content">Content:</label><textarea id="editor-song-content" rows="10"></textarea></div>
-            <button id="save-song-btn" type="button">Save Song</button>
-            <button id="cancel-editor-btn" type="button">Cancel</button>
+    <div id="headbar">
+        <div class="headbar-title">Melodies Of Worship</div>
+        <div class="headbar-controls">
+            <button id="theme-toggle-btn" type="button">Theme: System Default</button>
+            <div id="auth-controls">
+                <button id="login-btn" type="button">Login with Google</button>
+                <div id="user-info"></div>
+                <button id="logout-btn" type="button" style="display:none;">Logout</button>
+            </div>
         </div>
     </div>
+    <div id="content-container">
+        <div id="sidebar">
+            <div class="song-list-container">
+                <div id="search-container">
+                    <input id="song-search" type="text" placeholder="Search songs..." />
+                    <button id="clear-search-btn" type="button" aria-label="Clear search">&#10006;</button>
+                </div>
+                <ul id="song-list"></ul>
+                <button id="scroll-bottom-btn" type="button" class="scroll-overlay-btn" aria-label="Go to bottom"
+                    title="Go to bottom">↓</button>
+                <button id="scroll-top-btn" type="button" class="scroll-overlay-btn" aria-label="Go to top"
+                    title="Go to top">↑</button>
+            </div>
+            <div id="sidebar-resizer"></div>
+            <button id="show-add-song-form-btn" type="button" style="display:none;">Add New Song</button>
+            <div id="song-editor-form">
+                <h3 id="editor-form-title">Add New Song</h3>
+                <input type="hidden" id="editor-song-id">
+                <div><label for="editor-song-title">Title:</label><input type="text" id="editor-song-title"></div>
+                <div><label for="editor-song-number">Number (for ordering):</label><input type="number"
+                        id="editor-song-number" min="0"></div>
+                <div><label for="editor-song-author">Author(s):</label><input type="text" id="editor-song-author"></div>
+                <div><label for="editor-song-defaultKey">Default Key:</label><input type="text"
+                        id="editor-song-defaultKey" placeholder="e.g., G, Am, C#"></div>
+                <div><label for="editor-song-capo">Capo:</label><input type="number" id="editor-song-capo"
+                        placeholder="e.g., 0, 1, 2" min="0"></div>
+                <div><label for="editor-song-bpm">BPM (Tempo):</label><input type="number" id="editor-song-bpm"
+                        placeholder="e.g., 120" min="0"></div>
+                <div><label for="editor-song-ccliNumber">CCLI Number:</label><input type="text"
+                        id="editor-song-ccliNumber">
+                </div>
+                <div><label for="editor-song-copyrightInfo">Copyright Info:</label><textarea
+                        id="editor-song-copyrightInfo" rows="2"></textarea></div>
+                <div><label for="editor-song-themesTags">Themes/Tags (comma-separated):</label><input type="text"
+                        id="editor-song-themesTags" placeholder="e.g., worship, praise"></div>
+                <div><label for="editor-song-scriptureReferences">Scripture Refs (comma-separated):</label><input
+                        type="text" id="editor-song-scriptureReferences" placeholder="e.g., John 3:16"></div>
+                <div><label for="editor-song-alternativeTitles">Alternative Titles (comma-separated):</label><input
+                        type="text" id="editor-song-alternativeTitles"></div>
+                <div><label for="editor-song-chords">Chords (ChordPro format recommended):</label><textarea
+                        id="editor-song-chords" rows="8" placeholder="[C]Lyrics with [G]chords..."></textarea></div>
+                <div><label for="editor-song-content">Content:</label><textarea id="editor-song-content"
+                        rows="10"></textarea></div>
+                <button id="save-song-btn" type="button">Save Song</button>
+                <button id="cancel-editor-btn" type="button"
+                    style="background-color: #888; color: white;">Cancel</button>
+            </div>
+        </div>
+        <div id="main-pane">
+            <div id="controls">
+                <button id="back-btn" type="button">← Back to list</button>
+                <div id="text-size-controls">
+                    <button id="decrease-text-btn" type="button" title="Decrease text size" aria-label="A-">A-</button>
+                    <button id="increase-text-btn" type="button" title="Increase text size" aria-label="A+">A+</button>
+                </div>
 
-    <div id="main-pane">
-        <div id="controls">
-            <button id="back-btn" type="button">← Back to list</button>
-            <button id="decrease-text-btn" type="button" title="Decrease text size" aria-label="A-">A-</button>
-            <button id="increase-text-btn" type="button" title="Increase text size" aria-label="A+">A+</button>
-            <button id="edit-song-btn" type="button">Edit Song</button>
+                <button id="edit-song-btn" type="button">Edit Song</button>
+
+            </div>
+            <div id="song-history-display"
+                style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border); font-size: 0.9em;">
+                <!-- Metadata will be populated here by JS -->
+            </div>
+            <div id="song-content"></div> <!-- Changed from pre to div -->
+            <div id="song-metadata-display"
+                style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border); font-size: 0.9em;">
+                <!-- Metadata will be populated here by JS -->
+            </div>
+
+        </div>
+        <!-- Right Sidebar for Presentation Background Options -->
+        <div id="right-sidebar">
             <button id="presentation-mode-toggle" type="button">Presentation Mode: OFF</button>
             <select id="presentation-font-select">
                 <option value="'Noto Sans Telugu', 'Roboto', Arial, sans-serif">Default</option>
@@ -483,17 +657,35 @@
                 <option value="'Oswald', Arial, sans-serif">Oswald</option>
                 <option value="'Lobster', cursive">Lobster</option>
             </select>
+            <h3>Presentation Background</h3>
+            <label for="bg-type-select"><strong>Background Type:</strong></label>
+            <select id="bg-type-select">
+                <option value="picture">Picture</option>
+                <option value="color">Solid Color</option>
+                <option value="video">Video Loop</option>
+            </select>
+            <div id="bg-option-picture" class="bg-option" style="display:none; margin-top:10px;">
+                <label for="bg-picture-input">Choose Picture:</label>
+                <input type="file" id="bg-picture-input" accept="image/*">
+            </div>
+            <div id="bg-option-color" class="bg-option" style="display:none; margin-top:10px;">
+                <label for="bg-color-input">Choose Color:</label>
+                <input type="color" id="bg-color-input" value="#000000">
+            </div>
+            <div id="bg-option-video" class="bg-option" style="display:none; margin-top:10px;">
+                <label for="bg-video-input">Choose Video:</label>
+                <input type="file" id="bg-video-input" accept="video/*">
+            </div>
+            <button id="apply-bg-btn" type="button" style="margin-top:12px;">Apply Background</button>
         </div>
-        <div id="song-content"></div> <!-- Changed from pre to div -->
-
     </div>
 
     <script type="module">
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js"; // Ensure writeBatch is imported
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
-        import { getFirestore, collection, getDocs, doc, getDoc, addDoc, updateDoc, orderBy, query as firestoreQuery, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, getDoc, addDoc, updateDoc, orderBy, query as firestoreQuery, serverTimestamp, writeBatch, where } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
         // TODO: Add SDKs for Firebase products that you want to use
         // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -512,7 +704,7 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app); // Initialize if needed
-        const db = getFirestore(app); 
+        const db = getFirestore(app);
         const auth = getAuth(app); // Initialize Firebase Auth
 
         // GitHub constants are no longer needed as we're using Firestore
@@ -551,6 +743,17 @@
         const editorSongTitle = document.getElementById('editor-song-title');
         const editorSongNumber = document.getElementById('editor-song-number');
         const editorSongContent = document.getElementById('editor-song-content');
+        const editorSongAuthor = document.getElementById('editor-song-author');
+        const editorSongDefaultKey = document.getElementById('editor-song-defaultKey');
+        const editorSongCapo = document.getElementById('editor-song-capo');
+        const editorSongBpm = document.getElementById('editor-song-bpm');
+        const editorSongCcliNumber = document.getElementById('editor-song-ccliNumber');
+        const editorSongCopyrightInfo = document.getElementById('editor-song-copyrightInfo');
+        const editorSongThemesTags = document.getElementById('editor-song-themesTags');
+        const editorSongScriptureReferences = document.getElementById('editor-song-scriptureReferences');
+        const editorSongAlternativeTitles = document.getElementById('editor-song-alternativeTitles');
+        const editorSongChords = document.getElementById('editor-song-chords');
+
         const saveSongBtn = document.getElementById('save-song-btn');
         const cancelEditorBtn = document.getElementById('cancel-editor-btn');
         const editSongBtn = document.getElementById('edit-song-btn');
@@ -562,9 +765,10 @@
 
         // --- State ---
         let allSongsData = []; // Will store { id, title, number } from Firestore
-        const songCache = new Map();
-        let isSongViewActiveOnMobile = false; // Initialize mobile view state
-        const INITIAL_SONG_CONTENT_MESSAGE = 'Select a song from the list, or use the search bar.';        
+        const songContentCache = new Map(); // Will store { content: string } for loaded songs, keyed by songId
+        let isSongViewActiveOnMobile = false;
+        // Initialize mobile view state
+        const INITIAL_SONG_CONTENT_MESSAGE = 'Select a song from the list, or use the search bar.';
         const themeModes = ['system', 'light', 'dark', 'ocean-calm'];
         const themeLabels = {
             'system': 'Theme: System Default',
@@ -579,9 +783,9 @@
         let currentFontSize = 1;
         let currentEditingSongId = null; // To keep track of which song is being edited
         let currentUser = null; // To store the currently logged-in user object
-        
+
         // !!! IMPORTANT: Replace these with the actual UIDs of your admin users !!!
-        const ADMIN_UIDS = ["REPLACE_WITH_ADMIN_UID_1", "REPLACE_WITH_ADMIN_UID_2"]; 
+        const ADMIN_UIDS = ["h73Cs7pPmxdv3VqmbcHErhJsoR23", "REPLACE_WITH_ADMIN_UID_2"];
 
 
         // --- Theme ---
@@ -617,41 +821,33 @@
         async function fetchSongList() {
             songListElement.innerHTML = '<li>Loading songs...</li>';
             try {
-                const songsCollection = collection(db, "songs");
-                const q = firestoreQuery(songsCollection, orderBy("number", "asc")); // or orderBy("title", "asc")
-                const querySnapshot = await getDocs(q);
-
-                songListElement.innerHTML = '';
-                const fetchedSongMetadata = []; // For rendering the list
-                songCache.clear(); // Clear existing cache before populating
-
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const songTitle = data.title || doc.id;
-                    const songNumber = data.number || 0;
-                    const songContent = data.content || "[No content available]";
-
-                    // Populate metadata for the song list
-                    fetchedSongMetadata.push({
-                        id: doc.id, 
-                        title: songTitle,
-                        number: songNumber
-                    });
-
-                    // Cache the full song content
-                    songCache.set(doc.id, { title: songTitle, content: songContent });
+                // Fetch titles array from metadata/songs_meta
+                const metaDocRef = doc(db, "metadata", "songs_meta");
+                const metaSnap = await getDoc(metaDocRef);
+                if (!metaSnap.exists()) {
+                    songListElement.innerHTML = '<li>No song titles found in metadata.</li>';
+                    return;
+                }
+                const titles = metaSnap.data().titles || [];
+                // Build allSongsData as an array of { id, title }
+                allSongsData = titles.map(title => {
+                    // Try to extract the number from the title if present (e.g., "1 - A wonderful Savior")
+                    const match = title.match(/^(\d+)\s*-\s*(.+)$/);
+                    return {
+                        id: title, // Use title as id for now; you may want to map to actual doc IDs if available
+                        title: title,
+                        number: match ? parseInt(match[1], 10) : 0
+                    };
                 });
-
-                allSongsData = fetchedSongMetadata;
-
+                songListElement.innerHTML = '';
                 if (allSongsData.length === 0) {
-                    songListElement.innerHTML = '<li>No songs found in the database.</li>';
+                    songListElement.innerHTML = '<li>No songs found.</li>';
                     return;
                 }
                 renderSongList(allSongsData);
-                console.log(`Successfully loaded metadata and content for ${allSongsData.length} songs.`);
+                console.log(`Loaded ${allSongsData.length} song titles from metadata.`);
             } catch (error) {
-                console.error("Error fetching full song data from Firestore:", error);
+                console.error("Error fetching song titles from metadata:", error);
                 songListElement.innerHTML = `<li class="error">Error loading songs. Check console for details.</li>`;
             } finally {
                 updateScrollButtons();
@@ -671,19 +867,25 @@
         }
 
         // --- Search ---
-        // Updated to search through `allSongsData` based on title
         songSearchInput.addEventListener('input', function () {
             const query = this.value.trim().toLowerCase();
             clearSearchBtn.style.display = this.value ? 'block' : 'none';
             if (!query) {
-                renderSongList(allSongsData); // Corrected from allTxtFiles
+                renderSongList(allSongsData);
                 return;
             }
             const filtered = allSongsData.filter(song => {
-                const title = song.title.toLowerCase();
-                const cachedSong = songCache.get(song.id); // Get from cache
-                const content = cachedSong ? cachedSong.content.toLowerCase() : '';
-                return title.includes(query) || content.includes(query);
+                const lowerQuery = query.toLowerCase(); // Search query in lowercase
+                if (song.title && song.title.toLowerCase().includes(lowerQuery)) return true;
+                if (song.author && song.author.toLowerCase().includes(lowerQuery)) return true; // Search author
+                // Add more metadata fields to search if needed:
+                // if (song.ccliNumber && song.ccliNumber.toLowerCase().includes(lowerQuery)) return true;
+
+                const cachedContentEntry = songContentCache.get(song.id); // songContentCache stores {content}
+                if (cachedContentEntry && cachedContentEntry.content) {
+                    return cachedContentEntry.content.toLowerCase().includes(lowerQuery);
+                }
+                return false;
             });
             renderSongList(filtered);
         });
@@ -695,45 +897,75 @@
         });
 
         // --- Song Content Display ---
-        async function displaySongContent(songId) {
+        async function displaySongContent(songTitle) {
             songContentElement.classList.remove('error');
+            document.getElementById('song-metadata-display').innerHTML = '';
+            document.getElementById('song-history-display').innerHTML = '';
             songContentElement.innerHTML = '<p>Loading song content...</p>';
 
-            // Attempt to get song data from the pre-populated cache
-            let songData = songCache.get(songId);
-
-            if (!songData || !songData.content) {
-                try {
-                    const songDocRef = doc(db, "songs", songId);
-                    const docSnap = await getDoc(songDocRef);
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        songData = { title: data.title || songId, content: data.content || "[No content]" };
-                        songCache.set(songId, songData); // Cache the fetched content
-                    } else {
-                        throw new Error("Song document not found in Firestore.");
-                    }
-                } catch (error) {
-                    console.error("Error fetching song content:", error);
-                    // This part will now be less likely to hit if initial fetch was successful
-                    songContentElement.innerHTML = `<p class="error">Error loading song: ${error.message}</p>`;
+            try {
+                const songsCollection = collection(db, "songs");
+                const q = firestoreQuery(songsCollection, where("title", "==", songTitle));
+                const querySnapshot = await getDocs(q);
+                if (querySnapshot.empty) {
+                    songContentElement.innerHTML = `<p class="error">Song not found in songs collection.</p>`;
                     return;
                 }
-            }
+                const docSnap = querySnapshot.docs[0];
+                const songData = docSnap.data();
 
-            const paragraphs = songData.content.split(/\n\s*\n/);
-            songContentElement.innerHTML = '';
-            paragraphs.forEach(paragraphText => {
-                const trimmed = paragraphText.trim();
-                if (!trimmed) return;
-                const p = document.createElement('p');
-                p.innerHTML = trimmed.replace(/\n/g, '<br>');
-                p.addEventListener('click', () => displayParagraphInPresentation(p.innerHTML));
-                songContentElement.appendChild(p);
-            });
-            isSongViewActiveOnMobile = true;
-            currentEditingSongId = songId; // Set current song ID *before* updating view
-            updateAppView();
+                // --- Song History Section ---
+                const historyDisplay = document.getElementById('song-history-display');
+                let historyHtml = `<div><strong>${escapeHtml(songData.title || songTitle)}</strong></div>`;
+                if (songData.author) historyHtml += `<div><strong>Author:</strong> ${escapeHtml(songData.author)}</div>`;
+                if (songData.history) historyHtml += `<div><strong>History:</strong> ${escapeHtml(songData.history)}</div>`;
+                historyDisplay.innerHTML = historyHtml;
+
+                // --- Song Content ---
+                const content = songData.content || "[No lyrics available]";
+                const paragraphs = content.split(/\n\s*\n/);
+                songContentElement.innerHTML = '';
+                paragraphs.forEach(paragraphText => {
+                    const trimmed = paragraphText.trim();
+                    if (!trimmed) return;
+                    const p = document.createElement('p');
+                    p.innerHTML = trimmed.replace(/\n/g, '<br>');
+                    p.addEventListener('click', () => displayParagraphInPresentation(p.innerHTML));
+                    songContentElement.appendChild(p);
+                });
+
+                // --- Song Metadata Section ---
+                const metadataDisplayElement = document.getElementById('song-metadata-display');
+                let metadataHtml = '<ul style="margin:0; padding-left: 20px; list-style-type: disc;">';
+                if (songData.songbook) metadataHtml += `<li><strong>Songbook:</strong> ${escapeHtml(songData.songbook)}</li>`;
+                if (songData.genre) metadataHtml += `<li><strong>Genre:</strong> ${escapeHtml(songData.genre)}</li>`;
+                if (songData.language) metadataHtml += `<li><strong>Language:</strong> ${escapeHtml(songData.language)}</li>`;
+                if (songData.createdBy) metadataHtml += `<li><strong>Created By:</strong> ${escapeHtml(songData.createdBy)}</li>`;
+                if (songData.createdAt) metadataHtml += `<li><strong>Created At:</strong> ${escapeHtml(songData.createdAt)}</li>`;
+                if (songData.updatedBy) metadataHtml += `<li><strong>Updated By:</strong> ${escapeHtml(songData.updatedBy)}</li>`;
+                if (songData.updatedAt) metadataHtml += `<li><strong>Updated At:</strong> ${escapeHtml(songData.updatedAt)}</li>`;
+                // Add more fields as needed
+                metadataHtml += '</ul>';
+                metadataDisplayElement.innerHTML = metadataHtml;
+
+                isSongViewActiveOnMobile = true;
+                currentEditingSongId = docSnap.id;
+                updateAppView();
+            } catch (error) {
+                console.error("Error fetching song content:", error);
+                songContentElement.innerHTML = `<p class="error">Error loading song: ${error.message}</p>`;
+            }
+        }
+
+        // Helper function to escape HTML
+        function escapeHtml(unsafe) {
+            if (typeof unsafe !== 'string') return '';
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
 
         // --- Presentation Mode ---
@@ -793,6 +1025,9 @@
                         presentationWindowCheckInterval = null;
                     }
                 }, 500);
+                setTimeout(() => {
+                    applyPresentationBackground();
+                }, 300); // Give the window time to load
             } else {
                 alert("Could not open presentation window. Please allow pop-ups for this site.");
                 isPresentationMode = false;
@@ -861,7 +1096,7 @@
         function updateAppView() {
             const mobile = isMobile();
             let showEditButton = false;
-            
+
             if (mobile) {
                 if (isSongViewActiveOnMobile) {
                     sidebar.style.display = 'none';
@@ -938,7 +1173,7 @@
             loadTheme(); // Load theme first!
             setupAuthListeners(); // Setup Firebase Auth listeners
             songContentElement.textContent = INITIAL_SONG_CONTENT_MESSAGE;
-            currentEditingSongId = null; // Ensure no song is marked as active initially
+            currentEditingSongId = null;
             await fetchSongList(); // Changed from fetchSongListAndContents
             songEditorForm.style.display = 'none'; // Ensure editor is hidden
             updateAppView(); // This will set initial visibility of editSongBtn
@@ -997,34 +1232,74 @@
         });
 
         // --- Song Editor Functions ---
-        function showSongEditor(songIdToEdit = null) {
+        function showSongEditor(songTitleToEdit = null) {
             if (!currentUser || !currentUser.isAdmin) {
                 alert("You do not have permission to add or edit songs.");
                 return;
             }
             songEditorForm.style.display = 'block';
-            if (songIdToEdit) {
-                const songData = songCache.get(songIdToEdit);
-                if (songData) {
-                    editorFormTitle.textContent = 'Edit Song';
-                    editorSongId.value = songIdToEdit;
-                    editorSongTitle.value = songData.title;
-                    // Find the song in allSongsData to get its number, or default
-                    const songMeta = allSongsData.find(s => s.id === songIdToEdit);
-                    editorSongNumber.value = songMeta ? songMeta.number : (allSongsData.length + 1);
-                    editorSongContent.value = songData.content;
-                    saveSongBtn.textContent = 'Update Song';
-                } else {
-                    alert('Error: Song data not found in cache for editing.');
+            if (songTitleToEdit) {
+                // Find the song in songs collection by title
+                const songMeta = allSongsData.find(s => s.title === songTitleToEdit);
+                if (!songMeta) {
+                    alert('Error: Song metadata not found for editing.');
                     hideSongEditor();
                     return;
                 }
-            } else { // Adding new song
+                editorFormTitle.textContent = 'Edit Song';
+                editorSongId.value = songTitleToEdit;
+                editorSongTitle.value = songMeta.title;
+                editorSongNumber.value = songMeta.number;
+                editorSongAuthor.value = songMeta.author || '';
+                editorSongDefaultKey.value = songMeta.defaultKey || '';
+                editorSongCapo.value = (songMeta.capo !== undefined && songMeta.capo !== null) ? songMeta.capo : '';
+                editorSongBpm.value = (songMeta.bpm !== undefined && songMeta.bpm !== null) ? songMeta.bpm : '';
+                editorSongCcliNumber.value = songMeta.ccliNumber || '';
+                editorSongCopyrightInfo.value = songMeta.copyrightInfo || '';
+                editorSongThemesTags.value = (songMeta.themesTags && Array.isArray(songMeta.themesTags)) ? songMeta.themesTags.join(', ') : '';
+                editorSongScriptureReferences.value = (songMeta.scriptureReferences && Array.isArray(songMeta.scriptureReferences)) ? songMeta.scriptureReferences.join(', ') : '';
+                editorSongAlternativeTitles.value = (songMeta.alternativeTitles && Array.isArray(songMeta.alternativeTitles)) ? songMeta.alternativeTitles.join(', ') : '';
+                editorSongChords.value = songMeta.chords || '';
+
+                saveSongBtn.textContent = 'Update Song';
+
+                // Fetch the song document from songs collection by title
+                editorSongContent.value = "Loading content...";
+                const songsCollection = collection(db, "songs");
+                const q = firestoreQuery(songsCollection, where("title", "==", songTitleToEdit));
+                getDocs(q).then(querySnapshot => {
+                    if (!querySnapshot.empty) {
+                        const docSnap = querySnapshot.docs[0];
+                        const content = docSnap.data().content || "";
+                        editorSongContent.value = content;
+                        songContentCache.set(docSnap.id, { content }); // Cache by doc ID
+                        editorSongId.value = docSnap.id; // Store the real doc ID for update
+                    } else {
+                        editorSongContent.value = "[Content not found]";
+                        alert('Error: Song content not found for editing.');
+                    }
+                }).catch(err => {
+                    console.error("Error fetching content for editor:", err);
+                    editorSongContent.value = "[Error loading content]";
+                    alert('Error fetching song content for editing.');
+                });
+            } else {
                 editorFormTitle.textContent = 'Add New Song';
                 editorSongId.value = '';
                 editorSongTitle.value = '';
                 editorSongNumber.value = allSongsData.length > 0 ? Math.max(...allSongsData.map(s => s.number || 0)) + 1 : 1;
                 editorSongContent.value = '';
+                editorSongAuthor.value = '';
+                editorSongDefaultKey.value = '';
+                editorSongCapo.value = '';
+                editorSongBpm.value = '';
+                editorSongCcliNumber.value = '';
+                editorSongCopyrightInfo.value = '';
+                editorSongThemesTags.value = '';
+                editorSongScriptureReferences.value = '';
+                editorSongAlternativeTitles.value = '';
+                editorSongChords.value = '';
+
                 saveSongBtn.textContent = 'Save Song';
             }
             editorSongTitle.focus();
@@ -1036,6 +1311,17 @@
             editorSongTitle.value = '';
             editorSongNumber.value = '';
             editorSongContent.value = '';
+            editorSongAuthor.value = '';
+            editorSongDefaultKey.value = '';
+            editorSongCapo.value = '';
+            editorSongBpm.value = '';
+            editorSongCcliNumber.value = '';
+            editorSongCopyrightInfo.value = '';
+            editorSongThemesTags.value = '';
+            editorSongScriptureReferences.value = '';
+            editorSongAlternativeTitles.value = '';
+            editorSongChords.value = '';
+
         }
 
         showAddSongFormBtn.addEventListener('click', () => {
@@ -1068,48 +1354,112 @@
                 hideSongEditor();
                 return;
             }
-            const songId = editorSongId.value;
+            const songDocId = editorSongId.value; // This is the Firestore doc ID (set above)
             const title = editorSongTitle.value.trim();
             const number = parseInt(editorSongNumber.value, 10);
             const content = editorSongContent.value.trim();
+            const author = editorSongAuthor.value.trim() || null;
+            const defaultKey = editorSongDefaultKey.value.trim() || null;
+            const capoInput = editorSongCapo.value.trim();
+            let capo = capoInput === '' ? null : parseInt(capoInput, 10);
+            const bpmInput = editorSongBpm.value.trim();
+            let bpm = bpmInput === '' ? null : parseInt(bpmInput, 10);
+            const ccliNumber = editorSongCcliNumber.value.trim() || null;
+            const copyrightInfo = editorSongCopyrightInfo.value.trim() || null;
+            const themesTags = editorSongThemesTags.value.trim() ? editorSongThemesTags.value.split(',').map(s => s.trim()).filter(s => s) : [];
+            const scriptureReferences = editorSongScriptureReferences.value.trim() ? editorSongScriptureReferences.value.split(',').map(s => s.trim()).filter(s => s) : [];
+            const alternativeTitles = editorSongAlternativeTitles.value.trim() ? editorSongAlternativeTitles.value.split(',').map(s => s.trim()).filter(s => s) : [];
+            const chords = editorSongChords.value.trim() || null;
 
-            if (!title || !content) {
-                alert('Title and Content cannot be empty.');
+
+            if (!title) {
+                alert('Title cannot be empty.');
                 return;
             }
             if (isNaN(number)) {
                 alert('Song number must be a valid number.');
                 return;
             }
+            if (capoInput !== '' && isNaN(capo)) {
+                alert('Capo must be a valid number if provided.'); return;
+            } else if (isNaN(capo)) capo = null; // Ensure capo is null if not a valid number
+            if (bpmInput !== '' && isNaN(bpm)) {
+                alert('BPM must be a valid number if provided.'); return;
+            } else if (isNaN(bpm)) bpm = null; // Ensure bpm is null if not a valid number
 
-            const songData = { title, content, number };
+
+            const batch = writeBatch(db); // Ensure writeBatch is imported from Firestore
+            const userAuditInfo = {
+                uid: currentUser.uid,
+                name: currentUser.displayName || currentUser.email || 'Unknown User'
+            };
 
             try {
-                if (songId) { // Editing existing song
-                    songData.updatedAt = serverTimestamp();
-                    songData.updatedBy = {
-                        uid: currentUser.uid,
-                        name: currentUser.displayName || currentUser.email || 'Unknown User'
-                    };
-                    const songRef = doc(db, "songs", songId);
-                    await updateDoc(songRef, songData);
+                if (songDocId) { // Editing existing song
+                    const songRef = doc(db, "songs", songDocId);
+                    await updateDoc(songRef, {
+                        title,
+                        number,
+                        content,
+                        author,
+                        defaultKey,
+                        capo,
+                        bpm,
+                        ccliNumber,
+                        copyrightInfo,
+                        themesTags,
+                        scriptureReferences,
+                        alternativeTitles,
+                        chords,
+                        updatedAt: serverTimestamp(),
+                        updatedBy: {
+                            uid: currentUser.uid,
+                            name: currentUser.displayName || currentUser.email || 'Unknown User'
+                        }
+                    });
                     alert('Song updated successfully!');
-                } else { // Adding new song
-                    songData.createdAt = serverTimestamp();
-                    songData.createdBy = {
-                        uid: currentUser.uid,
-                        name: currentUser.displayName || currentUser.email || 'Unknown User'
+
+                    // Optimistically update local data
+                    const songMetaIndex = allSongsData.findIndex(s => s.id === songDocId);
+                    if (songMetaIndex > -1) {
+                        allSongsData[songMetaIndex] = { ...allSongsData[songMetaIndex], title, number };
+                        renderSongList(allSongsData); // Re-render list if title/number changed
+                    }
+                    songContentCache.set(songDocId, { content }); // Update content cache
+
+                    if (currentEditingSongId === songDocId) {
+                        displaySongContent(songDocId); // Refresh main pane if it was the displayed song
+                    }
+
+                } else {
+                    const newMetadataRef = doc(collection(db, "songs_metadata")); // Auto-generate ID
+                    const newSongId = newMetadataRef.id;
+                    const newContentRef = doc(db, "songs_content", newSongId);
+
+                    const metadataNew = {
+                        title,
+                        number,
+                        author,
+                        defaultKey,
+                        capo,
+                        bpm,
+                        ccliNumber,
+                        copyrightInfo,
+                        themesTags,
+                        scriptureReferences,
+                        alternativeTitles,
+                        chords,
+                        createdAt: serverTimestamp(),
+                        createdBy: userAuditInfo
                     };
-                    // Optionally, you can also set initial updatedAt/updatedBy to the same as createdAt/createdBy
-                    // songData.updatedAt = serverTimestamp(); 
-                    // songData.updatedBy = songData.createdBy;
-                    await addDoc(collection(db, "songs"), songData);
+                    batch.set(newMetadataRef, metadataNew);
+                    batch.set(newContentRef, { content });
+
+                    await batch.commit();
                     alert('Song added successfully!');
+                    await fetchSongList(); // Refresh entire list after adding a new song
                 }
                 hideSongEditor();
-                await fetchSongList(); // Refresh list and cache
-                // If editing, and the currently displayed song was edited, refresh its view
-                if (songId && currentEditingSongId === songId) displaySongContent(songId);
             } catch (error) {
                 console.error("Error saving song:", error);
                 alert(`Error saving song: ${error.message}`);
@@ -1163,6 +1513,100 @@
             // This will trigger onAuthStateChanged, which handles UI updates
             console.log("User signed out.");
         }
+
+        // --- Metadata Fetching Example ---
+        const metaDocRef = doc(db, "metadata", "songs_meta");
+        const metaSnap = await getDoc(metaDocRef);
+        if (metaSnap.exists()) {
+            const titles = metaSnap.data().titles; // This is your array of titles
+            // Use titles as needed
+        }
+
+        // Presentation Background Options Logic
+        const bgTypeSelect = document.getElementById('bg-type-select');
+        const bgOptionPicture = document.getElementById('bg-option-picture');
+        const bgOptionColor = document.getElementById('bg-option-color');
+        const bgOptionVideo = document.getElementById('bg-option-video');
+        const bgPictureInput = document.getElementById('bg-picture-input');
+        const bgColorInput = document.getElementById('bg-color-input');
+        const bgVideoInput = document.getElementById('bg-video-input');
+
+        function updateBgOptions() {
+            const val = bgTypeSelect.value;
+            bgOptionPicture.style.display = val === 'picture' ? 'block' : 'none';
+            bgOptionColor.style.display = val === 'color' ? 'block' : 'none';
+            bgOptionVideo.style.display = val === 'video' ? 'block' : 'none';
+        }
+        bgTypeSelect.addEventListener('change', updateBgOptions);
+        bgPictureInput.addEventListener('change', updateBgOptions);
+        bgColorInput.addEventListener('input', updateBgOptions);
+        bgVideoInput.addEventListener('change', updateBgOptions);
+
+        // Function to apply background to presentation window
+        function applyPresentationBackground() {
+            if (!presentationWindow || presentationWindow.closed) return;
+
+            const presentationBody = presentationWindow.document.body;
+            // Reset previous background styles
+            presentationBody.style.backgroundColor = 'black'; // Default
+            presentationBody.style.backgroundImage = 'none';
+            presentationBody.style.backgroundSize = 'cover';
+            presentationBody.style.backgroundPosition = 'center';
+            presentationBody.style.backgroundRepeat = 'no-repeat';
+            // Remove any previous video element
+            const existingVideo = presentationWindow.document.getElementById('presentation-video-bg');
+            if (existingVideo) {
+                existingVideo.remove();
+            }
+
+            const bgType = bgTypeSelect.value;
+
+            if (bgType === 'picture') {
+                const file = bgPictureInput.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        presentationBody.style.backgroundImage = `url('${e.target.result}')`;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            } else if (bgType === 'color') {
+                const color = bgColorInput.value;
+                presentationBody.style.backgroundColor = color;
+            } else if (bgType === 'video') {
+                const file = bgVideoInput.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const video = presentationWindow.document.createElement('video');
+                        video.id = 'presentation-video-bg';
+                        video.src = e.target.result;
+                        video.autoplay = true;
+                        video.loop = true;
+                        video.muted = true; // Mute video background
+                        video.style.cssText = `
+ position: fixed;
+ top: 0; left: 0; width: 100%; height: 100%;
+ object-fit: cover; z-index: -1;
+                    `;
+                        presentationWindow.document.body.appendChild(video);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        }
+
+        // You can add logic here to handle file/color selection and apply it to the presentation window as needed.
+
+        const applyBgBtn = document.getElementById('apply-bg-btn');
+        applyBgBtn.addEventListener('click', applyPresentationBackground);
+
+        // Optionally, remove automatic background application on input/file change
+        // (If you want to only apply when the button is clicked, comment out these lines:)
+        // bgTypeSelect.removeEventListener('change', applyPresentationBackground);
+        // bgPictureInput.removeEventListener('change', applyPresentationBackground);
+        // bgColorInput.removeEventListener('input', applyPresentationBackground);
+        // bgVideoInput.removeEventListener('change', applyPresentationBackground);
     </script>
 </body>
 
