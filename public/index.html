@@ -1542,6 +1542,9 @@
         bgColorInput.addEventListener('input', updateBgOptions);
         bgVideoInput.addEventListener('change', updateBgOptions);
 
+        // Ensure the correct background option is shown on page load
+        updateBgOptions();
+
         // Function to apply background to presentation window
         function applyPresentationBackground() {
             if (!presentationWindow || presentationWindow.closed) return;
