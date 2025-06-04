@@ -21,6 +21,7 @@ async function uploadSongs() {
     const title = file.replace('.txt', '');
     // You can extract a number if you want to sort numerically
     const number = parseInt(title.match(/^\d+/)?.[0] || '0', 10);
+    // Set the document in the 'songs' collection with the extracted data.
     await db.collection('songs').doc(title).set({
       title,
       content,
@@ -28,7 +29,9 @@ async function uploadSongs() {
     });
     console.log(`Uploaded: ${title}`);
   }
+  // Log a message indicating that all songs have been uploaded.
   console.log('All songs uploaded!');
 }
 
+// Call the uploadSongs function and catch any potential errors.
 uploadSongs().catch(console.error);

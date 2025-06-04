@@ -1,0 +1,46 @@
+Issue Type,Epic Name,Summary,Description,Parent
+Epic,Song Library Management,Song Library Management,Manage and display songs, 
+Story,,Song List & Search,As a user, I want to search and filter songs by title/content,Song Library Management
+Story,,Song Metadata Management,As an admin, I want to add/edit songs with metadata (title, number, content, chords, key, BPM, author, CCLI, tags, scripture references, alternative titles),Song Library Management
+Story,,Song Import/Export,As a song librarian, I want to import/export songs in ChordPro or text formats,Song Library Management
+Story,,Song Version History,As a song librarian, I want to view and manage song version history,Song Library Management
+
+Epic,Setlist & Liturgy Management,Setlist & Liturgy Management,Create and manage setlists and liturgical texts,
+Story,,Setlist Creation & Editing,As a worship leader, I want to create and edit setlists for services,Setlist & Liturgy Management
+Story,,Setlist Item Reordering,As a user, I want to reorder setlist items via drag-and-drop,Setlist & Liturgy Management
+Story,,Setlist Templates & Archiving,As a user, I want to save setlists as templates and archive/unarchive them,Setlist & Liturgy Management
+Story,,Liturgical Texts Management,As an admin, I want to create and manage liturgical texts (prayers, readings, announcements),Setlist & Liturgy Management
+
+Epic,Presentation & Stage Display,Presentation & Stage Display,Present lyrics and content with advanced controls,
+Story,,Presentation Mode Controls,As a presenter, I want to activate presentation mode and display lyrics in a separate window,Presentation & Stage Display
+Story,,Presentation Backgrounds,As a presenter, I want to select backgrounds (color, image, video) for presentation,Presentation & Stage Display
+Story,,Presentation Font & Theme,As a presenter, I want to adjust font and theme for the presentation window,Presentation & Stage Display
+Story,,Stage Display/Confidence Monitor,As a media operator, I want to control stage display output (current/next lines, chords, clock),Presentation & Stage Display
+Story,,Presentation Alerts,As a presenter, I want to send urgent messages/alerts as overlays,Presentation & Stage Display
+
+Epic,Advanced Presentation Tools,Advanced Presentation Tools (Sidebar),Advanced tools for live presentation,
+Story,,Countdown Timer,As a presenter, I want to set a countdown timer to a specific time or duration and display it on the presentation window with dynamic formatting,Advanced Presentation Tools
+Story,,Bible Reference Lower Third,As a presenter, I want to display a Bible reference as a lower third with animation for 5 seconds,Advanced Presentation Tools
+Story,,Bible Verse Integration,As a presenter, I want to select and present Bible verses using the scripture.api.bible API, with translation/book/chapter/verse selection,Advanced Presentation Tools
+Story,,Clickable Bible Verses,As a presenter, I want to click a verse to display it as a lower third on the presentation window,Advanced Presentation Tools
+Story,,Presentation Window Content Control,As a presenter, I want to fade the presentation window to black or show only the background,Advanced Presentation Tools
+
+Epic,User Management & Authentication,User Management & Authentication,Google Sign-In and role-based access,
+Story,,Google Sign-In,As a user, I want to log in with Google,User Management & Authentication
+Story,,Admin Indicator,As an admin, I want to see an "(Admin)" indicator,User Management & Authentication
+Story,,User Role Management,As an admin, I want to manage user roles and permissions,User Management & Authentication
+Story,,Role-Based Access,As a user, I want access to features based on my assigned role,User Management & Authentication
+
+Epic,Musician Tools & Offline Access,Musician Tools & Offline Access,Musician features and offline support,
+Story,,Chord Display & Transposition,As a musician, I want to view and transpose chords,Musician Tools & Offline Access
+Story,,Auto-Scroll Lyrics,As a musician, I want lyrics to auto-scroll with adjustable speed,Musician Tools & Offline Access
+Story,,Personal Annotations,As a musician, I want to add private annotations to songs/setlists,Musician Tools & Offline Access
+Story,,Offline Access,As a user, I want to download songs/setlists for offline use,Musician Tools & Offline Access
+
+Epic,Application Settings & Theming,Application Settings & Theming,Theme and font controls,
+Story,,Theme Selection & Persistence,As a user, I want to select and persist my preferred theme,Application Settings & Theming
+Story,,Font Size Controls,As a user, I want to adjust font size for readability,Application Settings & Theming
+
+Epic,Data Management & Integrity,Data Management & Integrity,Bulk edit, duplicate management, backup,
+Story,,Bulk Edit & Duplicate Management,As an admin, I want to bulk edit song metadata and find/merge duplicates,Data Management & Integrity
+Story,,Data Backup/Restore,As an admin, I want to back up and restore the Firestore database,Data Management & Integrity

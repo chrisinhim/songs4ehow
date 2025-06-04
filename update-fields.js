@@ -13,6 +13,10 @@ admin.initializeApp({
 // Get a reference to the Firestore database.
 const db = admin.firestore();
 
+// Define your admin user info here
+const ADMIN_UID = "h73Cs7pPmxdv3VqmbcHErhJsoR23";
+const ADMIN_NAME = "Christopher Malapati";
+
 // Asynchronous function to add new fields to all song documents in the 'songs' collection.
 async function addFieldsToAllSongs() {
   try {
@@ -42,10 +46,16 @@ async function addFieldsToAllSongs() {
         verse: "Yet to be added",
         audiolink: "Yet to be added",
         videolink: "Yet to be added",
-        createdBy: "Christopher Malapati",
-        createdAt: "30 May 2025 at 01:45:09 UTC+5:30",
-        updatedBy: "Christopher Malapati",
-        updatedAt: "30 May 2025 at 01:45:09 UTC+5:30"
+        createdBy: { uid: ADMIN_UID, name: ADMIN_NAME },
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedBy: { uid: ADMIN_UID, name: ADMIN_NAME },
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        defaultKey: "Yet to be added",
+        Capo: "Yet to be added",
+        BPM: "Yet to be added",
+        CCLINumber: "Yet to be added",
+        CopyrightInfo: "Yet to be added",
+        alternativeTitle: "Yet to be added",
       };
 
       // Add an update operation to the batch for the current song document.
