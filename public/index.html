@@ -689,6 +689,7 @@
         #countdown-present-btn:hover {
             background-color: #155a8a;
         }
+
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
@@ -794,8 +795,7 @@
                 <button id="edit-song-btn" type="button">Edit Song</button>
 
             </div>
-            <div id="song-history-display"
-                style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border); font-size: 0.9em;">
+            <div id="song-history-display" style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border); font-size: 0.9em;">
                 <!-- Metadata will be populated here by JS -->
             </div>
             <div id="song-content"></div> <!-- Changed from pre to div -->
@@ -821,7 +821,7 @@
         <!-- Right Sidebar for Presentation Background Options -->
         <div id="right-sidebar">
             <button id="presentation-mode-toggle" type="button">Presentation Mode: OFF</button>
-                        <hr style="margin: 18px 0;">
+            <hr style="margin: 18px 0;">
 
             <!-- Presentation Window Content Controls -->
             <div id="presentation-controls-section">
@@ -829,7 +829,7 @@
                 <button id="fade-to-black-btn" type="button" style="margin-bottom:8px;">Fade to Black</button>
                 <button id="show-background-only-btn" type="button">Show Only Background</button>
             </div>
-            
+
             <select id="presentation-font-select">
                 <option value="'Noto Sans Telugu', 'Roboto', Arial, sans-serif">Default</option>
                 <option value="'Roboto', Arial, sans-serif">Roboto</option>
@@ -933,10 +933,9 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
-        import { getFirestore, collection, getDocs, doc, getDoc, addDoc, updateDoc, orderBy, query as firestoreQuery, serverTimestamp, writeBatch, where } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, getDoc, addDoc, updateDoc, orderBy, query as firestoreQuery, serverTimestamp, writeBatch, where, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
         // Removed: import { getAI, getGenerativeModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-ai.js";
         // https://firebase.google.com/docs/web/setup#available-libraries
-
         // Your web app's Firebase configuration
         // For Firebase JS SDK v7.20.0 and later, measurementId is optional
         const firebaseConfig = {
@@ -1117,15 +1116,69 @@
             }
         }
 
+        // --- Pin Songs Feature ---
+
+        // 1. Utility to get/set pinned songs in localStorage
+        function getPinnedSongs() {
+            try {
+                return JSON.parse(localStorage.getItem('pinnedSongs') || '[]');
+            } catch {
+                return [];
+            }
+        }
+
+        function setPinnedSongs(pinned) {
+            localStorage.setItem('pinnedSongs', JSON.stringify(pinned));
+        }
+
+        // 2. Update renderSongList to show pinned songs at the top and add pin/unpin buttons
         function renderSongList(songsToRender) {
             songListElement.innerHTML = '';
-            songsToRender.forEach(song => {
+            const pinned = getPinnedSongs();
+
+            // Separate pinned and unpinned
+            const pinnedSongs = songsToRender.filter(song => pinned.includes(song.title));
+            const unpinnedSongs = songsToRender.filter(song => !pinned.includes(song.title));
+
+            // Helper to render a song item with pin button
+            function renderSongItem(song, isPinned) {
                 const listItem = document.createElement('li');
                 listItem.textContent = song.title;
-                listItem.dataset.songId = song.title; // Use song title as id
+                listItem.dataset.songId = song.title;
+
+                // Pin/unpin button
+                const pinBtn = document.createElement('button');
+                pinBtn.type = 'button';
+                pinBtn.style.marginLeft = '8px';
+                pinBtn.style.fontSize = '1em';
+                pinBtn.style.background = 'none';
+                pinBtn.style.border = 'none';
+                pinBtn.style.cursor = 'pointer';
+                pinBtn.title = isPinned ? 'Unpin song' : 'Pin song';
+                pinBtn.innerHTML = isPinned ? '📌' : '📍';
+
+                pinBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    let pins = getPinnedSongs();
+                    if (isPinned) {
+                        pins = pins.filter(t => t !== song.title);
+                    } else {
+                        pins.unshift(song.title);
+                    }
+                    setPinnedSongs(pins);
+                    renderSongList(songsToRender); // Re-render to update order and icons
+                });
+
+                listItem.appendChild(pinBtn);
                 listItem.addEventListener('click', () => displaySongContent(song.title));
                 songListElement.appendChild(listItem);
-            });
+            }
+
+            // Render pinned songs first
+            pinnedSongs.forEach(song => renderSongItem(song, true));
+            // Then unpinned songs
+            unpinnedSongs.forEach(song => renderSongItem(song, false));
+
             updateScrollButtons();
         }
 
@@ -1177,11 +1230,12 @@
                     return;
                 }
                 const docSnap = querySnapshot.docs[0]; // Assuming title is unique
-                const songData = docSnap.data();
+                songData = docSnap.data();
 
                 // --- Song History Section ---
                 const historyDisplay = document.getElementById('song-history-display');
-                let historyHtml = `<div><strong>${escapeHtml(songData.title || songTitle)}</strong></div>`;
+                let historyHtml = '';
+                if (songData.title) historyHtml += `<div><strong>Title:</strong> ${escapeHtml(songData.title)}</div>`;
                 if (songData.author) historyHtml += `<div><strong>Author:</strong> ${escapeHtml(songData.author)}</div>`;
                 if (songData.history) historyHtml += `<div><strong>History:</strong> ${escapeHtml(songData.history)}</div>`;
                 historyDisplay.innerHTML = historyHtml;
@@ -1190,9 +1244,8 @@
                 const content = songData.content || "[No lyrics available]";
                 const paragraphs = content.split(/\n\s*\n/);
                 songContentElement.innerHTML = '';
-
                 // Populate cache for search
-                songContentCache.set(songTitle, { // songTitle is the key (same as song.id from allSongsData)
+                songContentCache.set(songTitle, {
                     content: content,
                     author: songData.author || ""
                 });
@@ -1208,20 +1261,37 @@
                 // --- Song Metadata Section ---
                 const metadataDisplayElement = document.getElementById('song-metadata-display');
                 let metadataHtml = '<ul style="margin:0; padding-left: 20px; list-style-type: disc;">';
-                // Display metadata only if it exists
-                if (songData.songbook) metadataHtml += `<li><strong>Songbook:</strong> ${escapeHtml(songData.songbook)}</li>`; // Assuming songbook field exists
-                if (songData.genre) metadataHtml += `<li><strong>Genre:</strong> ${escapeHtml(songData.genre)}</li>`; // Assuming genre field exists
-                if (songData.language) metadataHtml += `<li><strong>Language:</strong> ${escapeHtml(songData.language)}</li>`; // Assuming language field exists
-                if (songData.createdBy && songData.createdBy.name) metadataHtml += `<li><strong>Created By:</strong> ${escapeHtml(songData.createdBy.name)}</li>`;
-                if (songData.createdAt) metadataHtml += `<li><strong>Created At:</strong> ${escapeHtml(songData.createdAt)}</li>`;
-                if (songData.updatedBy) metadataHtml += `<li><strong>Updated By:</strong> ${escapeHtml(songData.updatedBy)}</li>`;
-                if (songData.updatedAt) metadataHtml += `<li><strong>Updated At:</strong> ${escapeHtml(songData.updatedAt)}</li>`;
-                // Add more fields as needed
+
+                // Show all fields except title, author, history, content
+                const metaFields = [
+                    { key: 'songbook', label: 'Songbook' },
+                    { key: 'genre', label: 'Genre' },
+                    { key: 'language', label: 'Language' },
+                    { key: 'verse', label: 'Verse' },
+                    { key: 'audiolink', label: 'Audio Link' },
+                    { key: 'videolink', label: 'Video Link' },
+                    { key: 'createdBy', label: 'Created By', custom: d => d && d.name ? escapeHtml(d.name) : '' },
+                    { key: 'createdAt', label: 'Created At' },
+                    { key: 'updatedBy', label: 'Updated By', custom: d => d && d.name ? escapeHtml(d.name) : '' },
+                    { key: 'updatedAt', label: 'Updated At' },
+                    { key: 'defaultKey', label: 'Default Key' },
+                    { key: 'Capo', label: 'Capo' },
+                    { key: 'BPM', label: 'BPM' },
+                    { key: 'CCLINumber', label: 'CCLI Number' },
+                    { key: 'CopyrightInfo', label: 'Copyright Info' },
+                    { key: 'alternativeTitle', label: 'Alternative Title' }
+                ];
+                metaFields.forEach(field => {
+                    if (songData[field.key]) {
+                        let value = field.custom ? field.custom(songData[field.key]) : escapeHtml(songData[field.key]);
+                        metadataHtml += `<li><strong>${field.label}:</strong> ${value}</li>`;
+                    }
+                });
                 metadataHtml += '</ul>';
                 metadataDisplayElement.innerHTML = metadataHtml;
 
                 isSongViewActiveOnMobile = true;
-                currentEditingSongId = songTitle; // Store the title as the identifier for editing
+                currentEditingSongId = songTitle;
                 updateAppView();
             } catch (error) {
                 console.error("Error fetching song content:", error);
@@ -1299,6 +1369,7 @@
                 }, 500);
                 setTimeout(() => {
                     applyPresentationBackground();
+                    applyPresentationAlignment(); // <-- Ensure alignment is set on open
                 }, 300); // Give the window time to load
             } else {
                 alert("Could not open presentation window. Please allow pop-ups for this site.");
@@ -1308,10 +1379,79 @@
             }
         }
 
+        // --- Add alignment controls for presentation window ---
+        let presentationHAlign = 'center'; // 'left', 'center', 'right'
+        let presentationVAlign = 'center'; // 'top', 'center', 'bottom'
+
+        // Add alignment controls to the DOM (below #controls)
+        const alignControls = document.createElement('div');
+        alignControls.id = 'presentation-align-controls';
+        alignControls.style.display = 'flex';
+        alignControls.style.gap = '8px';
+        alignControls.style.alignItems = 'center';
+        alignControls.style.marginBottom = '10px';
+        alignControls.innerHTML = `
+            <label style="font-size:0.95em;">H Align:
+                <select id="presentation-halign">
+                    <option value="left">Left</option>
+                    <option value="center" selected>Center</option>
+                    <option value="right">Right</option>
+                </select>
+            </label>
+            <label style="font-size:0.95em;">V Align:
+                <select id="presentation-valign">
+                    <option value="top">Top</option>
+                    <option value="center" selected>Center</option>
+                    <option value="bottom">Bottom</option>
+                </select>
+            </label>
+        `;
+        controlsDiv.appendChild(alignControls);
+
+        const hAlignSelect = document.getElementById('presentation-halign');
+        const vAlignSelect = document.getElementById('presentation-valign');
+
+        hAlignSelect.addEventListener('change', () => {
+            presentationHAlign = hAlignSelect.value;
+        });
+        vAlignSelect.addEventListener('change', () => {
+            presentationVAlign = vAlignSelect.value;
+        });
+
+        // Helper to get CSS for alignment
+        function getPresentationAlignmentStyle() {
+            let justify, align;
+            // Horizontal
+            if (presentationHAlign === 'left') justify = 'flex-start';
+            else if (presentationHAlign === 'center') justify = 'center';
+            else justify = 'flex-end';
+            // Vertical
+            if (presentationVAlign === 'top') align = 'flex-start';
+            else if (presentationVAlign === 'center') align = 'center';
+            else align = 'flex-end';
+            return { justify, align };
+        }
+
+        // Update presentation window alignment
+        function applyPresentationAlignment() {
+            if (presentationWindow && !presentationWindow.closed) {
+                const { justify, align } = getPresentationAlignmentStyle();
+                presentationWindow.document.body.style.display = 'flex';
+                presentationWindow.document.body.style.justifyContent = justify;
+                presentationWindow.document.body.style.alignItems = align;
+            }
+        }
+
+        // Update alignment when changed
+        hAlignSelect.addEventListener('change', applyPresentationAlignment);
+        vAlignSelect.addEventListener('change', applyPresentationAlignment);
+
+        // --- Update displayParagraphInPresentation to apply alignment ---
         function displayParagraphInPresentation(paragraphHtml) {
             if (presentationWindow && !presentationWindow.closed) {
                 const presentationTextDiv = presentationWindow.document.getElementById('presentation-text');
                 if (presentationTextDiv) presentationTextDiv.innerHTML = paragraphHtml;
+                applyPresentationAlignment();
             }
         }
 
@@ -1600,7 +1740,7 @@
             editorSongAlternativeTitles.value = '';
             editorSongChords.value = '';
 
-            //currentEditingSongId = null; // <-- Add this line
+            currentEditingSongId = null; 
             updateAppView(); // <-- Add this line to update button visibility
         }
 
@@ -1629,90 +1769,67 @@
 
         cancelEditorBtn.addEventListener('click', hideSongEditor);
 
+        // --- Song Editor Save Logic ---
         saveSongBtn.addEventListener('click', async () => {
             if (!currentUser || !currentUser.isAdmin) {
                 alert("You do not have permission to save songs.");
-                hideSongEditor(); // Hide the form if user somehow got here without permission
+                hideSongEditor();
                 return;
             }
 
-            const songTitle = editorSongId.value; // This is the song title
+            const songTitle = editorSongId.value;
             const title = editorSongTitle.value.trim();
             const number = parseInt(editorSongNumber.value, 10);
             const content = editorSongContent.value.trim();
-            const author = editorSongAuthor.value.trim() || null;
-            const defaultKey = editorSongDefaultKey.value.trim() || null;
-            const capoInput = editorSongCapo.value.trim();
-            let capo = capoInput === '' ? null : parseInt(capoInput, 10);
-            const bpmInput = editorSongBpm.value.trim();
-            let bpm = bpmInput === '' ? null : parseInt(bpmInput, 10);
-            const ccliNumber = editorSongCcliNumber.value.trim() || null;
-            const copyrightInfo = editorSongCopyrightInfo.value.trim() || null;
-            const themesTags = editorSongThemesTags.value.trim() ? editorSongThemesTags.value.split(',').map(s => s.trim()).filter(s => s) : [];
-            const scriptureReferences = editorSongScriptureReferences.value.trim() ? editorSongScriptureReferences.value.split(',').map(s => s.trim()).filter(s => s) : [];
-            const alternativeTitles = editorSongAlternativeTitles.value.trim() ? editorSongAlternativeTitles.value.split(',').map(s => s.trim()).filter(s => s) : [];
-            const chords = editorSongChords.value.trim() || null;
 
-
-            if (!title) {
-                alert('Title cannot be empty.');
-                return;
-            }
-            if (isNaN(number) && editorSongNumber.value.trim() !== '') {
-                alert('Song number must be a valid number.');
-                return;
-            }
-            if (capoInput !== '' && isNaN(capo)) {
-                alert('Capo must be a valid number if provided.');
-            } else if (isNaN(capo)) capo = null; // Ensure capo is null if not a valid number
-            if (bpmInput !== '' && isNaN(bpm)) {
-                alert('BPM must be a valid number if provided.'); return;
-            } else if (isNaN(bpm)) bpm = null; // Ensure bpm is null if not a valid number
-
-
-            const batch = writeBatch(db); // Ensure writeBatch is imported from Firestore
-            const userAuditInfo = {
-                uid: currentUser.uid,
-                name: currentUser.displayName || currentUser.email || 'Unknown User'
+            // --- Use your FINAL FIELD LIST for all song add/update ---
+            const songFields = {
+                author: "EHOW",
+                songbook: "Melodies Of Worship",
+                genre: "Worship",
+                language: "English",
+                history: "Yet to be added",
+                verse: "Yet to be added",
+                audiolink: "Yet to be added",
+                videolink: "Yet to be added",
+                createdBy: { uid: currentUser.uid, name: currentUser.displayName || currentUser.email || 'Unknown User' },
+                createdAt: serverTimestamp(),
+                updatedBy: { uid: currentUser.uid, name: currentUser.displayName || currentUser.email || 'Unknown User' },
+                updatedAt: serverTimestamp(),
+                defaultKey: "Yet to be added",
+                Capo: "Yet to be added",
+                BPM: "Yet to be added",
+                CCLINumber: "Yet to be added",
+                CopyrightInfo: "Yet to be added",
+                alternativeTitle: "Yet to be added"
             };
 
+            // If you want to allow user input for some fields, override here:
+            songFields.title = title;
+            songFields.number = number;
+            songFields.content = content;
+
             try {
-                if (songTitle) { // Editing existing song (songTitle holds the original title)
-                    // Find the song doc by title
+                if (songTitle) {
+                    // Editing existing song
                     const songsCollection = collection(db, "songs");
                     const q = firestoreQuery(songsCollection, where("title", "==", songTitle));
-                    // Use getDocs to find the document reference based on the title
                     const querySnapshot = await getDocs(q);
                     if (!querySnapshot.empty) {
                         const docSnap = querySnapshot.docs[0];
                         const songRef = doc(db, "songs", docSnap.id);
-                        await updateDoc(songRef, {
-                            title,
-                            number,
-                            content,
-                            author,
-                            defaultKey,
-                            capo,
-                            bpm,
-                            ccliNumber,
-                            copyrightInfo,
-                            themesTags,
-                            scriptureReferences,
-                            alternativeTitles,
-                            chords,
-                            updatedAt: serverTimestamp(),
-                            updatedBy: {
-                                uid: currentUser.uid,
-                                name: currentUser.displayName || currentUser.email || 'Unknown User'
-                            }
-                        });
+                        await updateDoc(songRef, songFields);
+                        // --- Update title in metadata/songs_meta if changed ---
+                        if (title !== songTitle) {
+                            const metaDocRef = doc(db, "metadata", "songs_meta");
+                            await updateDoc(metaDocRef, { titles: arrayUnion(title) });
+                            await updateDoc(metaDocRef, { titles: arrayRemove(songTitle) });
+                        }
                         alert('Song updated successfully!');
-
                         // Optimistically update local data
-                        // Find the song in the local list by its original title (songTitle)
+
                         const songMetaIndex = allSongsData.findIndex(s => s.title === songTitle);
                         if (songMetaIndex > -1) {
-                            // Update the local entry with the new title and number
                             allSongsData[songMetaIndex] = { ...allSongsData[songMetaIndex], id: title, title, number };
                         }
                         songContentCache.set(songTitle, { content }); // Update content cache
@@ -1720,37 +1837,18 @@
                         if (currentEditingSongId === songTitle) {
                             displaySongContent(songTitle); // Refresh main pane if it was the displayed song
                         }
-
                     } else {
                         alert('Song not found for update.');
                     }
                 } else {
                     // Adding a new song
-                    // Create a new document reference in the 'songs' collection
-                    const newSongRef = doc(collection(db, "songs")); // Firestore auto-generates the ID
-                    const newSongId = newSongRef.id; // Get the auto-generated ID
-                    const metadataNew = {
-                        title,
-                        number,
-                        author,
-                        defaultKey,
-                        capo,
-                        bpm,
-                        ccliNumber,
-                        copyrightInfo,
-                        themesTags,
-                        scriptureReferences,
-                        alternativeTitles,
-                        chords,
-                        createdAt: serverTimestamp(),
-                        createdBy: userAuditInfo,
-                        // No separate content collection needed, store content directly
-                        content: content
-                    };
-
-                    await batch.commit();
+                    const newSongRef = doc(collection(db, "songs"));
+                    await setDoc(newSongRef, songFields);
+                    // Update metadata/songs_meta with new title
+                    const metaDocRef = doc(db, "metadata", "songs_meta");
+                    await updateDoc(metaDocRef, { titles: arrayUnion(title) });
                     alert('Song added successfully!');
-                    await fetchSongList(); // Refresh entire list after adding a new song
+                    await fetchSongList();
                 }
                 hideSongEditor();
             } catch (error) {
@@ -1764,13 +1862,14 @@
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     // User is signed in
+
                     currentUser = user;
                     currentUser.isAdmin = ADMIN_UIDS.includes(user.uid); // Check if user's UID is in the admin list
                     loginBtn.style.display = 'none';
                     logoutBtn.style.display = 'block';
 
 
-                    userInfoElement.textContent = `Logged in as: ${ user.displayName || user.email}`;
+                    userInfoElement.textContent = `Logged in as: ${user.displayName || user.email}`;
                     userInfoElement.style.display = 'block';
                 } else {
                     // User is signed out
@@ -1799,6 +1898,7 @@
         function updateCountdownMode() {
             if (countdownModeTime.checked) {
                 countdownTimeInputs.style.display = '';
+               
                 countdownPeriodInputs.style.display = 'none';
             } else {
                 countdownTimeInputs.style.display = 'none';
@@ -1810,6 +1910,7 @@
         updateCountdownMode();
 
         function displayCountdownInPresentation(ms) {
+           
             if (!presentationWindow || presentationWindow.closed) return;
             const div = presentationWindow.document.getElementById('presentation-text');
             let totalSeconds = Math.max(0, Math.floor(ms / 1000));
@@ -1819,9 +1920,9 @@
             let html = '';
             let style = 'font-size:5em;';
             if (totalSeconds >= 3600) {
-                html = `<span style="${style}">${hours}</span>:<span style="${style}">${minutes.toString().padStart(2,'0')}</span>:<span style="${style}">${seconds.toString().padStart(2,'0')}</span>`;
+                html = `<span style="${style}">${hours}</span>:<span style="${style}">${minutes.toString().padStart(2, '0')}</span>:<span style="${style}">${seconds.toString().padStart(2, '0')}</span>`;
             } else if (totalSeconds >= 60) {
-                html = `<span style="${style}">${minutes}</span>:<span style="${style}">${seconds.toString().padStart(2,'0')}</span>`;
+                html = `<span style="${style}">${minutes}</span>:<span style="${style}">${seconds.toString().padStart(2, '0')}</span>`;
             } else {
                 let big = totalSeconds < 10 ? 'font-size:8em; color:#ffeb3b; animation:pulse 0.5s alternate infinite;' : style;
                 html = `<span style="${big}">${seconds}</span>`;
