@@ -229,7 +229,11 @@
         }
 
         #song-list li {
-            /* FR-DES-001.1, FR-MOB-001.1, FR-SRCH-001.1, FR-SRCH-001.2 */
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            /* Ensures pin is at the end */
             list-style: none;
             padding: 10px 0;
             cursor: pointer;
@@ -250,6 +254,28 @@
         #song-list li:hover {
             /* NFR-USAB-001 */
             background-color: var(--bg-hover);
+        }
+
+        .song-pin-btn {
+            margin-left: 8px;
+            font-size: 1em;
+            background: none;
+            border: none;
+            cursor: pointer;
+            outline: none;
+            /* Hide by default for unpinned */
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        #song-list li.pinned .song-pin-btn {
+            opacity: 1;
+            /* Always show for pinned */
+        }
+
+        #song-list li:hover .song-pin-btn {
+            opacity: 1;
+            /* Show on hover for unpinned */
         }
 
         #main-pane {
@@ -689,7 +715,6 @@
         #countdown-present-btn:hover {
             background-color: #155a8a;
         }
-
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
@@ -795,7 +820,8 @@
                 <button id="edit-song-btn" type="button">Edit Song</button>
 
             </div>
-            <div id="song-history-display" style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border); font-size: 0.9em;">
+            <div id="song-history-display"
+                style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border); font-size: 0.9em;">
                 <!-- Metadata will be populated here by JS -->
             </div>
             <div id="song-content"></div> <!-- Changed from pre to div -->
@@ -933,7 +959,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
-        import { getFirestore, collection, getDocs, doc, getDoc, addDoc, updateDoc, orderBy, query as firestoreQuery, serverTimestamp, writeBatch, where, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, getDoc, setDoc, addDoc, updateDoc, orderBy, query as firestoreQuery, serverTimestamp, writeBatch, where, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
         // Removed: import { getAI, getGenerativeModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-ai.js";
         // https://firebase.google.com/docs/web/setup#available-libraries
         // Your web app's Firebase configuration
@@ -1140,20 +1166,16 @@
             const pinnedSongs = songsToRender.filter(song => pinned.includes(song.title));
             const unpinnedSongs = songsToRender.filter(song => !pinned.includes(song.title));
 
-            // Helper to render a song item with pin button
             function renderSongItem(song, isPinned) {
                 const listItem = document.createElement('li');
                 listItem.textContent = song.title;
                 listItem.dataset.songId = song.title;
+                listItem.classList.toggle('pinned', isPinned); // Add 'pinned' class if pinned
 
                 // Pin/unpin button
                 const pinBtn = document.createElement('button');
                 pinBtn.type = 'button';
-                pinBtn.style.marginLeft = '8px';
-                pinBtn.style.fontSize = '1em';
-                pinBtn.style.background = 'none';
-                pinBtn.style.border = 'none';
-                pinBtn.style.cursor = 'pointer';
+                pinBtn.className = 'song-pin-btn';
                 pinBtn.title = isPinned ? 'Unpin song' : 'Pin song';
                 pinBtn.innerHTML = isPinned ? '📌' : '📍';
 
@@ -1169,14 +1191,18 @@
                     renderSongList(songsToRender); // Re-render to update order and icons
                 });
 
+                // Use flex to align pin at end
+                listItem.innerHTML = '';
+                const titleSpan = document.createElement('span');
+                titleSpan.textContent = song.title;
+                listItem.appendChild(titleSpan);
                 listItem.appendChild(pinBtn);
+
                 listItem.addEventListener('click', () => displaySongContent(song.title));
                 songListElement.appendChild(listItem);
             }
 
-            // Render pinned songs first
             pinnedSongs.forEach(song => renderSongItem(song, true));
-            // Then unpinned songs
             unpinnedSongs.forEach(song => renderSongItem(song, false));
 
             updateScrollButtons();
@@ -1550,7 +1576,7 @@
             // Always update these based on admin status and whether a song is selected
             showAddSongFormBtn.style.display = showAddButton ? 'block' : 'none';
             editSongBtn.style.display = showEditButton ? 'block' : 'none';
-            console.log('Admin:', currentUser && currentUser.isAdmin, 'Editing:', currentEditingSongId, 'Show Edit:', showEditButton);
+            //console.log('Admin:', currentUser && currentUser.isAdmin, 'Editing:', currentEditingSongId, 'Show Edit:', showEditButton);
         }
 
 
@@ -1740,7 +1766,7 @@
             editorSongAlternativeTitles.value = '';
             editorSongChords.value = '';
 
-            currentEditingSongId = null; 
+            currentEditingSongId = null;
             updateAppView(); // <-- Add this line to update button visibility
         }
 
@@ -1770,6 +1796,7 @@
         cancelEditorBtn.addEventListener('click', hideSongEditor);
 
         // --- Song Editor Save Logic ---
+
         saveSongBtn.addEventListener('click', async () => {
             if (!currentUser || !currentUser.isAdmin) {
                 alert("You do not have permission to save songs.");
@@ -1898,7 +1925,7 @@
         function updateCountdownMode() {
             if (countdownModeTime.checked) {
                 countdownTimeInputs.style.display = '';
-               
+
                 countdownPeriodInputs.style.display = 'none';
             } else {
                 countdownTimeInputs.style.display = 'none';
@@ -1910,7 +1937,7 @@
         updateCountdownMode();
 
         function displayCountdownInPresentation(ms) {
-           
+
             if (!presentationWindow || presentationWindow.closed) return;
             const div = presentationWindow.document.getElementById('presentation-text');
             let totalSeconds = Math.max(0, Math.floor(ms / 1000));
